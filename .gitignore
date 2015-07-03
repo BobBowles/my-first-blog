@@ -1,0 +1,4 @@
+*.pyc
+__pycache__
+db.blogSite
+.DS_Store
