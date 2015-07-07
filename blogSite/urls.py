@@ -16,7 +16,25 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 
+# this is the original, like django tutorial (and djangogirls tutorial)
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^accounts/login/$', 'django.contrib.auth.views.login'),
+    url(r'^accounts/logout/$', 
+        'django.contrib.auth.views.logout', 
+        {'next_page': '/'}),
     url(r'', include('blog.urls')),
 ]
+
+## this is from djangogirls security tutorial. afaict the same only different
+#from django.conf.urls import patterns
+#admin.autodiscover()
+#urlpatterns = patterns('',
+#    url(r'^admin/', include(admin.site.urls)),
+#    url(r'^accounts/login/$', 'django.contrib.auth.views.login'),
+#    url(r'^accounts/logout/$', 
+#        'django.contrib.auth.views.logout', 
+#        {'next_page'; '/'}),
+#    url(r'', include('blog.urls')),
+#)
+

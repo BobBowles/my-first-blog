@@ -15,11 +15,33 @@ href="http://fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext" />
     
     <body>
         <div class="page-head">
-            <a class="top-menu" href="{% url "blog.views.post_new" %}">
-                <span class="glyphicon glyphicon-plus">
-                </span>
-            </a>
-            <h1><a href="">Bob's Django Girls Blog</a></h1>
+            <!-- top menu functions depend on logged-in status -->
+            {% if user.is_authenticated %}
+                <a class="top-menu" href="{% url "blog.views.post_new" %}">
+                    <span class="glyphicon glyphicon-plus">
+                    </span>
+                </a>
+                <a class="top-menu" href="{% url "post_draft_list" %}">
+                    <span class="glyphicon glyphicon-edit">
+                    </span>
+                </a>
+                <p class="top-menu">
+                    Hello {{ user.username }}
+                    <small>(
+                        <a href="{% url 'django.contrib.auth.views.logout' %}">
+                            Logout
+                        </a>)
+                        </small>
+                </p>
+            {% else %}
+                <a class="top-menu" 
+                    href="{% url "django.contrib.auth.views.login" %}">
+                    <span class="glyphicon glyphicon-lock">
+                    </span>
+                </a>
+            {% endif %}
+            
+            <h1><a href="">Bob's Django Girls/OldGits Blog</a></h1>
         </div>
         <div class="content">
             <div class="row">

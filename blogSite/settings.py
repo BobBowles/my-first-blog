@@ -25,6 +25,8 @@ SECRET_KEY = '-^bsonpl^n81i1c+n5brhoaspz==^l9(vft&_(5#op@ywhiil3'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+LOGIN_REDIRECT_URL = '/'
+
 ALLOWED_HOSTS = []
 
 
