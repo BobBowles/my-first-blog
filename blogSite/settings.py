@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'blog',
+    'cal',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -104,6 +105,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# TODO: what the hell is this about?
+# this is the collection point for deployment, where collectstatic puts files
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 

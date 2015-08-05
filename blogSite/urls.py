@@ -24,6 +24,7 @@ urlpatterns = [
         'django.contrib.auth.views.logout', 
         {'next_page': '/'}),
     url(r'', include('blog.urls')),
+    url(r'^calendar/', include('cal.urls')),
 ]
 
 ## this is from djangogirls security tutorial. afaict the same only different
