@@ -1,0 +1,43 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+
+    <div class="page-head">
+        <a class="top-menu" href="{% url 'cal.views.main' year=next_year %}">
+            {#{{ next_year }} &gt;&gt;#}
+                <span class="glyphicon glyphicon-forward">
+                </span>
+        </a>
+        <a class="top-menu" href="{% url 'cal.views.main' year=prev_year %}">
+            {#&lt;&lt; {{ prev_year }}#}
+                <span class="glyphicon glyphicon-backward">
+                </span>
+        </a>
+        <h1><a href="">Calendar</a></h1>
+    </div>
+
+
+    {% for year, months in years %}
+        <div class="clear"></div>
+        <h4>{{ year }}</h4>
+        {% for month in months %}
+            <div class=
+                {% if month.current %}
+                    "current"
+                {% else %}
+                    "month"
+                {% endif %}>
+                {% if month.entry %}<b>{% endif %}
+                    <a href="{#% url cal.views.month year month.n %#}">
+                        {{ month.name }}
+                    </a>
+                {% if month.entry %}</b>{% endif %}
+            </div>
+            {% if month.n == 6 or month.n == 12 %}
+                <br />
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+
+{% endblock content %}
+

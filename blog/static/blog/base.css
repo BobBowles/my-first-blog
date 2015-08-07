@@ -69,3 +69,15 @@ h1, h2, h3, h4 {
     margin-bottom: 20px;
     margin-left: 20px;
 }
+
+/* for calendar page(s) */
+.month {
+    float: left;
+    width: 100px;
+}
+
+.current {
+    float: left;
+    width: 100px;
+    background-color: #f57900;
+}

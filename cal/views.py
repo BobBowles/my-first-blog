@@ -53,9 +53,11 @@ def main(request, year=None):
                 })
         years.append((yr, months))
 
-    return render_to_response(('cal/main.html', {
+    return render_to_response('cal/main.html', {
         'years': years,
         'user': request.user,
-        'year': year,
+#        'year': year,
+        'prev_year': year - 3,
+        'next_year': year + 3,
 #        'reminders': reminders(request),
-        }))
+        })
