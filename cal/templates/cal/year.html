@@ -3,12 +3,12 @@
 {% block content %}
 
     <div class="page-head">
-        <a class="top-menu" href="{% url 'cal.views.main' year=next_year %}">
+        <a class="top-menu" href="{% url 'cal.views.year' year=next_year %}">
             {#{{ next_year }} &gt;&gt;#}
                 <span class="glyphicon glyphicon-forward">
                 </span>
         </a>
-        <a class="top-menu" href="{% url 'cal.views.main' year=prev_year %}">
+        <a class="top-menu" href="{% url 'cal.views.year' year=prev_year %}">
             {#&lt;&lt; {{ prev_year }}#}
                 <span class="glyphicon glyphicon-backward">
                 </span>
@@ -18,12 +18,12 @@
 
 
     {% for year, months in years %}
-        <div class="clear"></div>
+        <div class="clear"></div> <!-- duh? -->
         <h4>{{ year }}</h4>
         {% for month in months %}
             <div class="month{% if month.current %} current{% endif %}
                 {% if month.entry %} entry{% endif %}">
-                <a href="{#% url cal.views.month year month.n %#}">
+                <a href="{% url 'cal.views.month' year=year month=month.n %}">
                     {{ month.name }}
                 </a>
             </div>

@@ -1,0 +1,56 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+
+    <div class="page-head">
+        <a class="top-menu" href=
+            "{% url 'cal.views.month' year=year month=month change='next' %}">
+                <span class="glyphicon glyphicon-forward">
+                </span>
+        </a>
+        <a class="top-menu" href=
+            "{% url 'cal.views.month' year=year month=month change='prev' %}">
+                <span class="glyphicon glyphicon-backward">
+                </span>
+        </a>
+        <h1><a href="">Calendar</a></h1>
+    </div>
+
+
+    <div class="month">
+        <table class="weeks">
+            <tr>
+                <th class="day">Monday</th>
+                <th class="day">Tuesday</th>
+                <th class="day">Wednesday</th>
+                <th class="day">Thursday</th>
+                <th class="day">Friday</th>
+                <th class="day">Saturday</th>
+                <th class="day">Sunday</th>
+            </tr>
+            {% for week in weeks %}
+                <tr>
+                    {% for day, entries, current in week %}
+                        <td class=
+"day{% if day != 0 %} regular{% endif %}{% if current %} current{% endif %}"
+                            {% if day != 0 %}
+                                onClick=
+"parent.location='{#% url 'cal.views.day' year=year month=month day=day %#}'"
+                            {% endif %}>
+                            {% if day != 0 %}
+                                {{ day }}
+                                {% for entry in entries %}
+                                    <br />
+                                    <b>{{entry.creator}}</b>: 
+                                        {{ entry.short|safe }}
+                                {% endfor %}
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+{% endblock content %}
+

@@ -77,11 +77,35 @@ h1, h2, h3, h4 {
 }
 
 .current {
-/*    float: left;*/
-/*    width: 100px;*/
     background-color: #f57900;
 }
 
 .entry {
     font-weight: bold;
 }
+
+.weeks {
+    width: 100%;
+    table-layout: auto;
+    whitespace: nowrap;
+}
+
+.weeks th {
+    width: 14%;
+    font-weight: normal;
+}
+
+.day {
+    vertical-align: top;
+    font-style: italic;
+    padding: 30px;
+}
+
+.day.regular {
+    font-style: normal !important;
+}
+
+.day.regular:hover {
+    background-color; #c4a000;
+}
+
