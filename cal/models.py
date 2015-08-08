@@ -23,9 +23,9 @@ class Entry(models.Model):
 
     def __str__(self):
         if self.title:
-            return self.creator + ' - ' + self.title
+            return self.creator.username + ' - ' + self.title
         else:
-            return self.creator + ' - ' + self.snippet[:40]
+            return self.creator.username + ' - ' + self.snippet[:40]
 
 
     def short(self):
