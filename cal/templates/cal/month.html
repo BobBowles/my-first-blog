@@ -20,13 +20,9 @@
     <div class="month">
         <table class="weeks">
             <tr>
-                <th class="day">Monday</th>
-                <th class="day">Tuesday</th>
-                <th class="day">Wednesday</th>
-                <th class="day">Thursday</th>
-                <th class="day">Friday</th>
-                <th class="day">Saturday</th>
-                <th class="day">Sunday</th>
+                {% for day in day_names %}
+                    <th class="day">{{ day }}</th>
+                {% endfor %}
             </tr>
             {% for week in weeks %}
                 <tr>

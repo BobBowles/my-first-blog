@@ -24,6 +24,16 @@ MONTH_NAMES = [
     'December',
 ]
 
+DAY_NAMES = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday',
+]
+
 
 @login_required
 def year(request, year=None):
@@ -113,5 +123,6 @@ def month(request, year=None, month=None, change=None):
             'user': request.user,
             'weeks': weeks,
             'month_name': MONTH_NAMES[month-1],
+            'day_names': DAY_NAMES,
         },
     )
