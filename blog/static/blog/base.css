@@ -103,6 +103,7 @@ h1, h2, h3, h4 {
 
 .day.regular {
     font-style: normal !important;
+    height: 200px;
 }
 
 .day.regular:hover {
