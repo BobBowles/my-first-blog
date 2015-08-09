@@ -1,0 +1,47 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+
+    <div class="page-head">
+        <a class="top-menu" href=
+"{% url 'cal.views.day' year=date.year month=date.month day=date.day change='next' %}">
+            <span class="glyphicon glyphicon-forward">
+            </span>
+        </a>
+        <a class="top-menu" href=
+"{% url 'cal.views.day' year=date.year month=date.month day=date.day change='prev' %}">
+            <span class="glyphicon glyphicon-backward">
+            </span>
+        </a>
+        <h1>
+            <a href="">Entries {{ date.day }} {{ month_name }} {{ date.year }}
+            </a>
+        </h1>
+    </div>
+
+    <form 
+action="{% url 'cal.views.day' year=date.year month=date.month day=date.day %}"
+method="POST">
+        {% csrf_token %}
+
+        {{ entries.management_form }}
+        
+        {% for entry in entries.forms %}
+            {{ entry.id }}
+            <div class="entry">
+                <div class="right">Delete {{ entry.DELETE }}</div>
+                <div id="inp1">
+                    <p>Title: {{ entry.title }}</p>
+                    <p>Snippet: {{ entry.snippet }}</p>
+                </div>
+                <div class="right">Remind: {{ entry.remind }}</div>
+                {{ entry.body }}
+            </div>
+        {% endfor %}
+        <input type="submit" value="Save" />
+    </form>
+
+
+
+{% endblock content %}
+

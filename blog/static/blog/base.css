@@ -110,3 +110,7 @@ h1, h2, h3, h4 {
     background-color; #c4a000;
 }
 
+.right {
+    float: right;
+}
+

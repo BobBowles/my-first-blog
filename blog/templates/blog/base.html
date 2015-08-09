@@ -47,7 +47,21 @@ href="http://fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext" />
             <div class="row">
                 <div class="col-md-8">
                     {% block content %}
-                    {% endblock %}
+                    {% endblock content %}
+                </div>
+                <div class="col-md-4">
+                    {% block sidebar %}
+                        {% if reminders %}
+                        <div class="reminders">
+                            <div class="page-head">
+                                <h1>Alerts</h1>
+                            </div>
+                            {% for reminder in reminders %}
+                                <p> {{ reminder.short|safe }}</p>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    {% endblock sidebar %}
                 </div>
             </div>
         </div>

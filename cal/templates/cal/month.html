@@ -4,16 +4,16 @@
 
     <div class="page-head">
         <a class="top-menu" href=
-            "{% url 'cal.views.month' year=year month=month change='next' %}">
-                <span class="glyphicon glyphicon-forward">
-                </span>
+"{% url 'cal.views.month' year=date.year month=date.month change='next' %}">
+            <span class="glyphicon glyphicon-forward">
+            </span>
         </a>
         <a class="top-menu" href=
-            "{% url 'cal.views.month' year=year month=month change='prev' %}">
-                <span class="glyphicon glyphicon-backward">
-                </span>
+"{% url 'cal.views.month' year=date.year month=date.month change='prev' %}">
+            <span class="glyphicon glyphicon-backward">
+            </span>
         </a>
-        <h1><a href="">Calendar {{ month_name }} {{ year }}</a></h1>
+        <h1><a href="">Calendar {{ month_name }} {{ date.year }}</a></h1>
     </div>
 
 
@@ -31,7 +31,7 @@
 "day{% if day != 0 %} regular{% endif %}{% if current %} current{% endif %}"
                             {% if day != 0 %}
                                 onClick=
-"parent.location='{#% url 'cal.views.day' year=year month=month day=day %#}'"
+"parent.location='{% url 'cal.views.day' year=date.year month=date.month day=day %}'"
                             {% endif %}>
                             {% if day != 0 %}
                                 {{ day }}
