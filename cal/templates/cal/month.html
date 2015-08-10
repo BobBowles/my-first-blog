@@ -1,4 +1,4 @@
-{% extends 'blog/base.html' %}
+{% extends 'cal/base.html' %}
 
 {% block content %}
 
@@ -12,6 +12,10 @@
 "{% url 'cal.views.month' year=date.year month=date.month change='prev' %}">
             <span class="glyphicon glyphicon-backward">
             </span>
+        </a>
+        <a class="top-menu" href="{% url 'cal.views.year' year=date.year %}">
+                <span class="glyphicon glyphicon-eject">
+                </span>
         </a>
         <h1><a href="">Calendar {{ month_name }} {{ date.year }}</a></h1>
     </div>

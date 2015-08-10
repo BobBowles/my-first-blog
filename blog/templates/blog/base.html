@@ -31,8 +31,14 @@ href="http://fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext" />
                         <a href="{% url 'django.contrib.auth.views.logout' %}">
                             Logout
                         </a>)
-                        </small>
+                    </small>
                 </p>
+                {% block links %}
+                    <a class="top-menu" href="{% url 'cal.views.year' %}">
+                        <span class="glyphicon glyphicon-calendar">
+                        </span>
+                    </a>
+                {% endblock links %}
             {% else %}
                 <a class="top-menu" 
                     href="{% url "django.contrib.auth.views.login" %}">
