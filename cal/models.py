@@ -1,10 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib import admin
+import datetime
+from django.utils import timezone
 
 
 # Create your models here.
 
+DEFAULT_DURATION = datetime.timedelta(hours=1)
+DEFAULT_TIME = datetime.time(hour=12)
 
 
 class Entry(models.Model):
@@ -17,6 +21,8 @@ class Entry(models.Model):
     body = models.TextField(blank=True)
     created = models.DateTimeField(auto_now_add=True)
     date = models.DateField(blank=True)
+    time = models.TimeField(blank=True, default=DEFAULT_TIME)
+    duration = models.DurationField(blank=True, default=DEFAULT_DURATION)
     creator = models.ForeignKey(User, blank=True, null=True)
     remind = models.BooleanField(default=False)
 
@@ -39,16 +45,4 @@ class Entry(models.Model):
     class Meta:
         verbose_name_plural = 'entries'
 
-
-
-class EntryAdmin(admin.ModelAdmin):
-    list_display = [
-        'creator',
-        'date',
-        'title',
-        'snippet',
-        ]
-    list_filter = [
-        'creator',
-        ]
 

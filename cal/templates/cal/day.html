@@ -33,15 +33,26 @@ method="POST">
         
         {% for entry in entries.forms %}
             {{ entry.id }}
-            <div class="entry">
-                <div class="right">Delete {{ entry.DELETE }}</div>
-                <div id="inp1">
-                    <p>Title: {{ entry.title }}</p>
-                    <p>Snippet: {{ entry.snippet }}</p>
+            <div class="row">
+                <div class="col-md-1">Time:</div>
+                <div class="col-md-1">{{ entry.time }}</div>
+                <div class="col-md-offset-2 col-md-1">Duration:</div>
+                <div class="col-md-1">{{ entry.duration }}</div>
+                <div class="right">Delete: {{ entry.DELETE }}</div>
+            </div>
+            <div class="row">
+                <div id="inp1" class="col-md-1">Title:</div>
+                <div class="col-md-2">{{ entry.title }}</div>
+                <div class="col-md-offset-1 col-md-1">Snippet:</div>
+                <div class="col-md-3">{{ entry.snippet }}</div>
+            </div>
+            <div class="row">
+                <div class="col-md-8">
+                    {{ entry.body }}
                 </div>
                 <div class="right">Remind: {{ entry.remind }}</div>
-                {{ entry.body }}
             </div>
+            <hr />
         {% endfor %}
         <input type="submit" value="Save" />
     </form>
