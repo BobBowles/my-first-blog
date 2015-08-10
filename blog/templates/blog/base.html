@@ -9,7 +9,8 @@ href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css" />
         <link rel="stylesheet" href="{% static "blog/base.css" %}" />
         <link rel="stylesheet" type="text/css" 
 href="http://fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext" />
-        
+        {% block head_extra %}
+        {% endblock head_extra %}
         <title>Bob's Blog</title>
     </head>
     

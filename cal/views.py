@@ -8,6 +8,7 @@ from django.core.context_processors import csrf
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.db.models import Q
+from django.contrib.admin.widgets import AdminTimeWidget
 
 
 # Create your views here.
@@ -182,6 +183,9 @@ def day(request, year=None, month=None, day=None, change=None):
         extra=1, 
         exclude=('creator', 'date'),
         can_delete=True,
+        widgets = {
+            'time': AdminTimeWidget,
+        }
     )
 
     # save the changes if this is a post request

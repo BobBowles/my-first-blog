@@ -18,6 +18,7 @@ from django.contrib import admin
 
 # this is the original, like django tutorial (and djangogirls tutorial)
 urlpatterns = [
+    url(r'^my_admin/jsi18n', 'django.views.i18n.javascript_catalog'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^accounts/login/$', 'django.contrib.auth.views.login'),
     url(r'^accounts/logout/$', 
