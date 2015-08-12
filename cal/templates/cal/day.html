@@ -1,15 +1,8 @@
 {% extends 'cal/base.html' %}
 
 {% block head_extra %}
-    {% load staticfiles %}
-    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/forms.css' %}"/>
-    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/base.css' %}"/>
-    {#<link rel="stylesheet" type="text/css" href="{% static 'admin/css/global.css' %}"/>#}
-    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/widgets.css' %}"/>
-    {#<script language="javascript" type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>#}
-    {#<script type="text/javascript" src="{% static 'js/jquery.js' %}" />#}
-    <script type="text/javascript" src="/my_admin/jsi18n/"></script>
-    <script type="text/javascript" src="{% static 'admin/js/core.js' %}"></script>
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     {{ entries.media }}
 {% endblock head_extra %}
 
@@ -32,7 +25,8 @@
                 </span>
         </a>
         <h1>
-            <a href="">Entries {{ date.day }} {{ month_name }} {{ date.year }}
+            <a href="">Entries for 
+                {{ date.day }} {{ month_name }} {{ date.year }}
             </a>
         </h1>
     </div>
@@ -43,14 +37,13 @@ method="POST">
         {% csrf_token %}
 
         {{ entries.management_form }}
-        
         {% for entry in entries.forms %}
             {{ entry.id }}
             <div class="row">
                 <div class="col-md-1">Time:</div>
                 <div class="col-md-3">{{ entry.time }}</div>
                 <div class="col-md-1">Duration:</div>
-                <div class="col-md-1">{{ entry.duration }}</div>
+                <div class="col-md-3">{{ entry.duration }}</div>
                 <div class="right">Delete: {{ entry.DELETE }}</div>
             </div>
             <div class="row">

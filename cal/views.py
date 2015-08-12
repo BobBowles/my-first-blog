@@ -8,8 +8,7 @@ from django.core.context_processors import csrf
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.db.models import Q
-from django.contrib.admin.widgets import AdminTimeWidget
-
+from datetimewidget.widgets import TimeWidget
 
 # Create your views here.
 
@@ -178,14 +177,28 @@ def day(request, year=None, month=None, day=None, change=None):
         date = date + dayDelta
 
     # create a form for entry of new entries (sic)
+    timeWidgetOptions = {
+        'format': 'HH:ii P',
+        'showMeridian': True,
+    }
+    durationWidgetOptions = {
+        'format': 'hh:ii',
+    }
     EntriesFormset = modelformset_factory(
         Entry, 
         extra=1, 
         exclude=('creator', 'date'),
         can_delete=True,
         widgets = {
-            'time': AdminTimeWidget,
-        }
+            'time': TimeWidget(
+                bootstrap_version=3,
+                options=timeWidgetOptions,
+            ),
+            'duration': TimeWidget(
+                bootstrap_version=3,
+                options=durationWidgetOptions,
+            )
+        },
     )
 
     # save the changes if this is a post request

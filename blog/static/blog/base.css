@@ -114,3 +114,9 @@ h1, h2, h3, h4 {
     float: right;
 }
 
+/* experiment at styling the TimeWidget */
+/* workaround for silly date in the TimeWidget popout header */
+.datetimepicker th {
+    visibility: hidden !important;
+}
+
