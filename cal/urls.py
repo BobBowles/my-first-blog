@@ -16,5 +16,14 @@ views.day,
     ),
     url(r'^day/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$', views.day),
     url(r'^day/$', views.day),          # default day is today
+    url(
+r'^day_list/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/(?P<change>prev|next)/$',
+views.day_list,
+    ),
+    url(
+        r'^day_list/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$', 
+        views.day_list
+    ),
+    url(r'^day_list/$', views.day_list),          # default day is today
 ]
 

@@ -35,7 +35,8 @@
 "day{% if day != 0 %} regular{% endif %}{% if current %} current{% endif %}"
                             {% if day != 0 %}
                                 onClick=
-"parent.location='{% url 'cal.views.day' year=date.year month=date.month day=day %}'"
+{#"parent.location='{% url 'cal.views.day' year=date.year month=date.month day=day %}'"#}
+"parent.location='{% url 'cal.views.day_list' year=date.year month=date.month day=day %}'"
                             {% endif %}>
                             {% if day != 0 %}
                                 {{ day }}
