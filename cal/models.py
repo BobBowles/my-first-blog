@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib import admin
 import datetime
 from django.utils import timezone
+from django.forms import ValidationError
 
 
 # Create your models here.
@@ -11,9 +12,18 @@ DEFAULT_DURATION = datetime.timedelta(hours=1)
 DEFAULT_TIME = datetime.time(hour=12)
 
 
+
 class Entry(models.Model):
     """
     A calendar entry, some event entered in the calendar.
+
+    Entries need to be able to compare times and do basic temporal arithmetic.
+    To do this (I think) we need to implement rich comparator methods so one
+    entry knows how to compare itself with another.
+    One possible (potentially undesirable) side-effect is that entries may
+    consider each other 'equal' when they have neither the same start time
+    nor the same duration. They will nevertheless be 'equivalent' in sharing
+    a portion of time.
     """
 
     title = models.CharField(max_length=40)
@@ -40,6 +50,61 @@ class Entry(models.Model):
         else:
             return self.title
     short.allow_tags = True
+
+
+    def time_end(self):
+        """
+        Calculate the time of the end of the entry from the start time and the
+        duration.
+        Sadly the naive method of adding the duration directly to the time 
+        is not supported in python datetime arithmetic; a datetime object has 
+        to be used.
+        """
+        the_time = datetime.datetime.combine(self.date, self.time)
+        the_time_end = the_time + self.duration
+        return the_time_end.time()
+
+
+    def __eq__(self, other):
+        """
+        Determine if the entries are 'eqivalent' (not necessarily mathematically
+        equal).
+        NOTE: time period end time is non-inclusive.
+        """
+        # dates must be equal to start with
+        # TODO: note time rounding kludge
+        if (self.date.timetuple()[0:3] != other.date.timetuple()[0:3]):
+            return False
+
+        # time periods do not overlap; self happens before other
+        if (self.time < other.time and self.time_end() <= other.time):
+            return False
+
+        # time periods do not overlap; self happens after other
+        if (self.time > other.time and self.time >= other.time_end()):
+            return False
+
+        # anything else has to mean they overlap in time, right?
+        return True
+
+
+    def clean(self):
+        """
+        Override Model method to validate the content. We need the entry to be 
+        invalid if it clashes in time with a pre-existing entry.
+        """
+        # do basic housekeeping first
+        #super(models.Model, self).clean()
+
+        # get the day's existing entries
+        savedEntries = Entry.objects.filter(date=self.date)
+
+        # ensure no time clashes
+        for entry in savedEntries:
+            if self == entry:
+                raise ValidationError(
+            'Time clash not allowed. Please change the date/time/duration.'
+                )
 
 
     class Meta:
