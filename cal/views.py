@@ -3,16 +3,18 @@ from django.contrib.auth.decorators import login_required
 import datetime
 from django.utils import timezone
 import calendar
-from django.forms.models import modelformset_factory
+from django.forms.formsets import formset_factory
 from django.core.context_processors import csrf
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.db.models import Q
-from datetimewidget.widgets import TimeWidget
+#from datetimewidget.widgets import TimeWidget
 
 # Create your views here.
 
 from .models import Entry
+from .forms import EntryForm
+
 
 MONTH_NAMES = [
     'January',
@@ -40,6 +42,35 @@ DAY_NAMES = [
 ]
 
 
+def evaluateTimeSlots():
+    """
+    Calculate labels and starting times for diary day display.
+    Returns a list of labels and start/end times of time slots.
+    """
+    DUMMY_DAY = timezone.datetime.today()
+    TIME_START = datetime.time(hour=6)
+    TIME_FINISH = datetime.time(hour=20)
+    TIME_INC = datetime.timedelta(minutes=30)
+
+    time = datetime.datetime.combine(DUMMY_DAY, TIME_START)
+    finish = datetime.datetime.combine(DUMMY_DAY, TIME_FINISH)
+    timeSlots = []
+    while (time <= finish):
+        thisTime = time.time()
+        time += TIME_INC
+        timeSlots.append((
+            thisTime.strftime('%I:%M %p'), 
+            thisTime.strftime('time%H%M'),
+            thisTime,
+            time.time(),
+        ))
+    return timeSlots
+
+
+TIME_SLOTS = evaluateTimeSlots()
+
+
+
 def reminders(request):
     """
     Data for the reminder sidebar.
@@ -51,7 +82,7 @@ def reminders(request):
         Q(date=today)|Q(date=tomorrow), 
         creator=request.user, 
         remind=True,
-    )
+    ).order_by('date', 'time')
 #    # ...or like this:
 #    return (
 #        Entry.objects.filter(
@@ -156,10 +187,9 @@ def month(request, year=None, month=None, change=None):
     )
 
 
-@login_required
-def day(request, year=None, month=None, day=None, change=None):
+def getDate(year, month, day, change):
     """
-    Display entries in a particular day in a calendar-style day view.
+    Helper function to obtain the date from kwargs.
     """
     # default to today
     today = timezone.datetime.today()
@@ -175,67 +205,43 @@ def day(request, year=None, month=None, day=None, change=None):
         if change == 'prev':
             dayDelta = datetime.timedelta(days=-1)
         date = date + dayDelta
+    return date
 
-    # create a form for entry of new entries (sic)
-    timeWidgetOptions = {
-        'format': 'HH:ii P',
-        'showMeridian': True,
-    }
-    durationWidgetOptions = {
-        'format': 'hh:ii',
-    }
-    EntriesFormset = modelformset_factory(
-        Entry, 
-        extra=1, 
-        exclude=('creator', 'date'),
-        can_delete=True,
-        widgets = {
-            'time': TimeWidget(
-                bootstrap_version=3,
-                options=timeWidgetOptions,
-            ),
-            'duration': TimeWidget(
-                bootstrap_version=3,
-                options=durationWidgetOptions,
-            )
+
+@login_required
+def day(request, year=None, month=None, day=None, change=None):
+    """
+    Display entries in a particular day in a calendar-style day view.
+    """
+    date = getDate(year, month, day, change)
+
+    # obtain the day's entries divided into time slots
+    time_slots = []
+    for timeLabel, modalLabel, startTime, endTime in TIME_SLOTS:
+        entries = Entry.objects\
+            .filter(
+                date=date, 
+                time__gte=startTime, 
+                time__lt=endTime, 
+                creator=request.user
+        )
+        time_slots.append((
+            timeLabel, 
+            modalLabel,
+            startTime,
+            entries.first(),
+        ))
+
+    return render_to_response(
+        'cal/day.html', 
+        {
+            'date': date,
+            'user': request.user,
+            'month_name': MONTH_NAMES[date.month-1],
+            'time_slots': time_slots,
+            'reminders': reminders(request),
         },
     )
-
-    # save the changes if this is a post request
-    if request.method == 'POST':
-        formset = EntriesFormset(request.POST)
-
-        if formset.is_valid():
-            entries = formset.save(commit=False)
-
-            # really delete forms marked for removal
-            for entry in formset.deleted_objects:
-                entry.delete()
-
-            # add the current date and user, and really save it
-            for entry in entries:
-                entry.creator = request.user
-                entry.date = date
-                entry.save()
-            return HttpResponseRedirect(reverse(
-                    'cal.views.month', 
-                    args=(year, month)
-            ))
-
-    # unposted form
-    else:
-        formset = EntriesFormset(
-            queryset=Entry.objects.filter(date=date, creator=request.user)
-        )
-
-    context = {
-        'entries': formset,
-        'date': date,
-        'month_name': MONTH_NAMES[date.month-1],
-        'user': request.user,
-    }
-    context.update(csrf(request))
-    return render_to_response('cal/day.html', context)
 
 
 @login_required
@@ -243,44 +249,31 @@ def day_list(request, year=None, month=None, day=None, change=None):
     """
     Display entries in a particular day in an editable list.
     """
-    # default to today
-    today = timezone.datetime.today()
-    if not year:
-        year, month, day = today.year, today.month, today.day
-    else:
-        year, month, day = int(year), int(month), int(day)
-    date = timezone.datetime(year=year, month=month, day=day)
-
-    # handle day change with year and month rollover
-    if change:
-        dayDelta = datetime.timedelta(days=1)
-        if change == 'prev':
-            dayDelta = datetime.timedelta(days=-1)
-        date = date + dayDelta
+    date = getDate(year, month, day, change)
 
     # create a form for entry of new entries (sic)
-    timeWidgetOptions = {
-        'format': 'HH:ii P',
-        'showMeridian': True,
-    }
-    durationWidgetOptions = {
-        'format': 'hh:ii',
-    }
-    EntriesFormset = modelformset_factory(
-        Entry, 
+#    timeWidgetOptions = {
+#        'format': 'HH:ii P',
+#        'showMeridian': True,
+#    }
+#    durationWidgetOptions = {
+#        'format': 'hh:ii',
+#    }
+    EntriesFormset = formset_factory(
+        EntryForm, 
         extra=1, 
         exclude=('creator', 'date'),
         can_delete=True,
-        widgets = {
-            'time': TimeWidget(
-                bootstrap_version=3,
-                options=timeWidgetOptions,
-            ),
-            'duration': TimeWidget(
-                bootstrap_version=3,
-                options=durationWidgetOptions,
-            )
-        },
+#        widgets = {
+#            'time': TimeWidget(
+#                bootstrap_version=3,
+#                options=timeWidgetOptions,
+#            ),
+#            'duration': TimeWidget(
+#                bootstrap_version=3,
+#                options=durationWidgetOptions,
+#            )
+#        },
     )
 
     # save the changes if this is a post request
@@ -307,7 +300,9 @@ def day_list(request, year=None, month=None, day=None, change=None):
     # unposted form
     else:
         formset = EntriesFormset(
-            queryset=Entry.objects.filter(date=date, creator=request.user)
+            queryset=Entry.objects\
+                .filter(date=date, creator=request.user)\
+                    .order_by('time')
         )
 
     context = {
