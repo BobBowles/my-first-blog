@@ -3,6 +3,7 @@ from .models import Entry
 from django.utils import timezone
 import datetime
 from django.forms import ValidationError
+import traceback
 
 # Create your tests here.
 
@@ -281,7 +282,6 @@ class EntryModelTests(TestCase):
         Make sure cleaning the data raises no Exception when times do not
         clash with pre-existing entry data.
         """
-        print('Hello World entry_time_relation_clean_no_clash')
         dateDelta1 = datetime.timedelta(days=0)
         time1 = datetime.time(hour=12)
         duration1 = datetime.timedelta(hours=1)
@@ -310,8 +310,41 @@ class EntryModelTests(TestCase):
             entry2.clean()
             self.assertFalse(entry1 == entry2)
         except Exception as e:
+            traceback.print_exc()
             self.fail(
     'Cleaning an entry with no time clash raised an unexpected exception: {0}'
+    .format(e)
+            )
+
+
+    def test_entry_time_relation_clean_save_existing(self):
+        """
+        Make sure cleaning the data raises no Exception we are just posting back.
+        """
+        dateDelta1 = datetime.timedelta(days=0)
+        time1 = datetime.time(hour=12)
+        duration1 = datetime.timedelta(hours=1)
+        entry1 = create_entry(
+            dateDelta1, 
+            time1,
+            duration1,
+            'time calc test 1',
+            'time calc test 1',
+            'time calc test 1',
+        )
+        entry1.save()
+        entry2 = Entry.objects.filter(
+            date=entry1.date, 
+            time=entry1.time,
+        ).first()
+        # make sure an exception is NOT raised
+        try:
+            entry2.clean()
+            self.assertTrue(entry1 == entry2)
+        except Exception as e:
+            traceback.print_exc()
+            self.fail(
+    'Cleaning an entry that already exists raised an unexpected exception: {0}'
     .format(e)
             )
 

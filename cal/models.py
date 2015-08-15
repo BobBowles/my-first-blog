@@ -100,11 +100,13 @@ class Entry(models.Model):
         savedEntries = Entry.objects.filter(date=self.date)
 
         # ensure no time clashes
-        for entry in savedEntries:
-            if self == entry:
-                raise ValidationError(
+        for other in savedEntries:
+            if self == other:
+                # if we are just saving the same entry to the same time, its OK
+                if not self.pk or (self.pk and self.pk != other.pk):
+                    raise ValidationError(
             'Time clash not allowed. Please change the date/time/duration.'
-                )
+                    )
 
 
     class Meta:
