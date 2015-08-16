@@ -5,30 +5,21 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 {% endblock head_extra %}
 
-{% block content %}
 
-    <div class="page-head">
-        <a class="top-menu" href=
-"{% url 'cal.views.day' year=date.year month=date.month day=date.day change='next' %}">
-            <span class="glyphicon glyphicon-forward">
-            </span>
-        </a>
-        <a class="top-menu" href=
-"{% url 'cal.views.day' year=date.year month=date.month day=date.day change='prev' %}">
-            <span class="glyphicon glyphicon-backward">
-            </span>
-        </a>
-        <a class="top-menu" href=
-"{% url 'cal.views.month' year=date.year month=date.month %}">
-                <span class="glyphicon glyphicon-eject">
-                </span>
-        </a>
-        <h1>
-            <a href="">Entries for 
-                {{ date.day }} {{ month_name }} {{ date.year }}
-            </a>
-        </h1>
-    </div>
+{% block calendar_nav %}
+    {% url 'cal.views.day' year=date.year month=date.month day=date.day change='next' as cal_nav_next %}
+    {% url 'cal.views.day' year=date.year month=date.month day=date.day change='prev' as cal_nav_prev %}
+    {% url 'cal.views.month' year=date.year month=date.month as cal_nav_up %}
+    {{ block.super }}
+{% endblock calendar_nav %}
+
+
+{% block calendar_title %}
+    Calendar {{ date.day }} {{ month_name }} {{ date.year }}
+{% endblock calendar_title %}
+
+
+{% block calendar_content %}
 
     <div class="container-fluid">
         {% for label, modal_label, start_time, entry in time_slots %}
@@ -86,5 +77,5 @@
     </div>
 
 
-{% endblock content %}
+{% endblock calendar_content %}
 

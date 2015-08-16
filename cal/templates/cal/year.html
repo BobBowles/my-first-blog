@@ -1,24 +1,20 @@
 {% extends 'cal/base.html' %}
 
-{% block content %}
 
-    <div class="page-head">
-        <a class="top-menu" href="{% url 'cal.views.year' year=next_year %}">
-                <span class="glyphicon glyphicon-forward">
-                </span>
-        </a>
-        <a class="top-menu" href="{% url 'cal.views.year' year=prev_year %}">
-                <span class="glyphicon glyphicon-backward">
-                </span>
-        </a>
-        <a class="top-menu" href="{% url 'cal.views.year' %}">
-                <span class="glyphicon glyphicon-eject">
-                </span>
-        </a>
-        <h1><a href="">Calendar</a></h1>
-    </div>
+{% block calendar_nav %}
+    {% url 'cal.views.year' year=next_year as cal_nav_next %}
+    {% url 'cal.views.year' year=prev_year as cal_nav_prev %}
+    {% url 'cal.views.year' as cal_nav_up %}
+    {{ block.super }}
+{% endblock calendar_nav %}
 
 
+{% block calendar_title %}
+    Calendar {{ year }}
+{% endblock calendar_title %}
+
+
+{% block calendar_content %}
     {% for year, months in years %}
         <div class="clear"></div> <!-- duh? -->
         <h4>{{ year }}</h4>
@@ -34,6 +30,5 @@
             {% endif %}
         {% endfor %}
     {% endfor %}
-
-{% endblock content %}
+{% endblock calendar_content %}
 
