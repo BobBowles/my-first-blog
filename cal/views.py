@@ -8,7 +8,8 @@ from django.core.context_processors import csrf
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.db.models import Q
-#from datetimewidget.widgets import TimeWidget
+import locale
+from . import settings
 
 # Create your views here.
 
@@ -16,30 +17,23 @@ from .models import Entry
 from .forms import EntryForm
 
 
-MONTH_NAMES = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-]
+# set the first day of the week (default 0=monday)
+# (uses settings variable CAL_FIRST_DAY_OF_WEEK)
+calendar.setfirstweekday(settings.CAL_FIRST_DAY_OF_WEEK)
 
-DAY_NAMES = [
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-    'Sunday',
-]
+
+# locale-aware month and day names
+if settings.CAL_CALENDAR_LOCALE:
+    locale.setlocale(locale.LC_ALL, settings.CAL_CALENDAR_LOCALE)
+else:
+    locale.setlocale(locale.LC_ALL, '')
+
+
+MONTH_NAMES = calendar.month_name[1:]
+DAY_NAMES = (
+    calendar.day_name[calendar.firstweekday():] + 
+    calendar.day_name[:calendar.firstweekday()]
+)
 
 
 def evaluateTimeSlots():
@@ -157,7 +151,7 @@ def month(request, year=None, month=None, change=None):
         date = date + monthDelta
 
     # intial values
-    cal = calendar.Calendar()
+    cal = calendar.Calendar(calendar.firstweekday())
     month_days = cal.itermonthdays(date.year, date.month)
     weeks = [[]]
     week_no = 0

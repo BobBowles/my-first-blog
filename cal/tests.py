@@ -1,11 +1,20 @@
 from django.test import TestCase
+from django.test.utils import override_settings
 from .models import Entry
 from django.utils import timezone
 import datetime
 from django.forms import ValidationError
 import traceback
+from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
+#from . import settings
+from django.conf import settings as main_settings
+from . import settings
+from . import views
+import imp
 
 # Create your tests here.
+
 
 
 
@@ -222,22 +231,6 @@ class EntryModelTests(TestCase):
             'time calc test 1',
             'time calc test 1',
         )
-#        print('Entry1: date: {0} start: {1} duration: {2} end: {3}'
-#            .format(
-#                entry1.date.timetuple()[0:3], 
-#                entry1.time, 
-#                entry1.duration, 
-#                entry1.time_end(),
-#            )
-#        )
-#        print('Entry2: date: {0} start: {1} duration: {2} end: {3}'
-#            .format(
-#                entry2.date.timetuple()[0:3], 
-#                entry2.time, 
-#                entry2.duration, 
-#                entry2.time_end(),
-#            )
-#        )
         self.assertTrue(entry1 == entry2)
 
 
@@ -347,4 +340,62 @@ class EntryModelTests(TestCase):
     'Cleaning an entry that already exists raised an unexpected exception: {0}'
     .format(e)
             )
+
+
+class ViewTests(TestCase):
+    """
+    Tests of various aspects of the calendar views and behavior.
+    """
+
+
+    def setup(self):
+        """
+        Set up a client for getting/posting the views.
+        """
+        User.objects.create_user('test', 'test@example.com', 'test')
+        self.client.login(username='test', password='test')
+
+
+    def test_login_required_for_calendar(self):
+        """
+        Navigating to the calendar automatically redirects to login page if 
+        not logged in.
+        """
+        response = self.client.get(reverse('cal.views.year'))
+        self.assertRedirects(
+            response, 
+            '/accounts/login/?next=/calendar/',
+        )
+
+
+    def test_cal_first_day_of_week_default(self):
+        """
+        Make sure the custom setting for day of week works.
+        """
+        self.setup()
+
+        # test the default
+        response = self.client.get(reverse('cal.views.month'))
+        self.assertEqual(response.context['day_names'][0], 'Monday')
+
+
+    def test_cal_first_day_of_week_sunday(self):
+        """
+        Make sure the custom setting for day of week works.
+        """
+        self.setup()
+        setattr(main_settings, 'CAL_FIRST_DAY_OF_WEEK', 6)
+
+        # test for sunday
+        imp.reload(settings)
+        imp.reload(views)
+        response = self.client.get(reverse('cal.views.month'))
+        self.assertEqual(response.context['day_names'][0], 'Sunday')
+
+        # tidy up the mess (make sure default is restored)
+        setattr(main_settings, 'CAL_FIRST_DAY_OF_WEEK', 0)
+        imp.reload(settings)
+        imp.reload(views)
+        response = self.client.get(reverse('cal.views.month'))
+        self.assertEqual(response.context['day_names'][0], 'Monday')
 
