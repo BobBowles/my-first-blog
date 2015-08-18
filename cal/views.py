@@ -22,13 +22,6 @@ from .forms import EntryForm
 calendar.setfirstweekday(settings.CAL_FIRST_DAY_OF_WEEK)
 
 
-# locale-aware month and day names
-if settings.CAL_CALENDAR_LOCALE:
-    locale.setlocale(locale.LC_ALL, settings.CAL_CALENDAR_LOCALE)
-else:
-    locale.setlocale(locale.LC_ALL, '')
-
-
 MONTH_NAMES = calendar.month_name[1:]
 DAY_NAMES = (
     calendar.day_name[calendar.firstweekday():] + 
