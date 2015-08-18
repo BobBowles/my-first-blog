@@ -6,9 +6,13 @@ from datetimewidget.widgets import (
 )
 
 
-
+VALID_TIME_FORMATS = ['%H:%M', '%I:%M%p', '%I:%M %p',]
+TIME_FORMATS = ['%H:%M', '%I:%M%p', '%I:%M %p',]
+DURATION_FORMATS = ['%H:%M',]
 DATE_WIDGET_OPTIONS = {
-    'todayBtn': True,
+#    'todayBtn': True,
+    'minView': 2,
+    'maxView': 3,
 }
 TIME_WIDGET_OPTIONS = {
     'format': 'HH:ii P',
@@ -47,5 +51,9 @@ class EntryForm(forms.ModelForm):
                 bootstrap_version=3,
                 options=DURATION_WIDGET_OPTIONS,
             ),
+        }
+        input_formats = {
+            'time': TIME_FORMATS,
+            'duration': DURATION_FORMATS,
         }
 

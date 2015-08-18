@@ -1,4 +1,9 @@
-from django.shortcuts import render, render_to_response
+from django.shortcuts import (
+    get_object_or_404, 
+    redirect,
+    render, 
+    render_to_response,
+)
 from django.contrib.auth.decorators import login_required
 import datetime
 from django.utils import timezone
@@ -300,3 +305,65 @@ def day_list(request, year=None, month=None, day=None, change=None):
     }
     context.update(csrf(request))
     return render_to_response('cal/day_list.html', context)
+
+
+@login_required
+def entry(
+    request, 
+    pk=None, 
+    year=None, 
+    month=None, 
+    day=None, 
+    hour=None, 
+    minute=None,
+    ):
+    """
+    Edit/create an entry for the diary.
+    """
+    date = timezone.now().date()
+    time = timezone.now().time()
+    entry = None
+    if pk:                              # edit existing entry
+        entry = get_object_or_404(Entry, pk=pk)
+    else:                               # create new
+        # determine the date and time to use - now is the default
+        if year:                        # use date/time provided
+            date = datetime.date(
+                year=int(year),
+                month=int(month),
+                day=int(day),
+            )
+            time = datetime.time(
+                hour=int(hour),
+                minute=int(minute),
+            )
+        entry = Entry(
+            date=date,
+            time=time,
+            creator=request.user,
+        )
+
+    if request.method == 'POST':
+        form = EntryForm(request.POST, instance=entry)
+        if form.is_valid():
+            entry = form.save(commit=False)
+            # do any necessary tidying of entry attributes
+            #
+            entry.save()
+            return redirect(
+                'cal.views.day', 
+                year=entry.date.year, 
+                month=entry.date.month,
+                day=entry.date.day,
+            )
+    else:
+        form = EntryForm(instance=entry)
+    return render(
+        request, 
+        'cal/entry.html', 
+        {
+            'form': form,
+            'date': date,
+        },
+    )
+

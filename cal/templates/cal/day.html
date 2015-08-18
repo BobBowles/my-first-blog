@@ -24,16 +24,16 @@
     <div class="container-fluid">
         {% for label, modal_label, start_time, entry in time_slots %}
             <div class="row">
-                <div class="col-md-2">
-                    <b>{{ label }}</b>
-                </div>
                 {% if entry %}
-                    <div class="col-md-2" 
+                    <div class="col-md-2">
+                        <b>{{ label }}</b>
+                    </div>
+                    <div class="col-md-3" 
                         data-toggle="modal" 
                         data-target="#{{ modal_label }}">
                         <i>{{ entry.time }} - {{ entry.time_end }}</i>
                     </div>
-                    <div class="col-md-6"
+                    <div class="col-md-5"
                         data-toggle="modal" 
                         data-target="#{{ modal_label }}">
                         {{ entry.short|safe }}
@@ -61,6 +61,13 @@
                                 <div class="modal-footer">
                                     <button type="button" 
                                         class="btn btn-default" 
+                                        href=
+                                    "{% url 'cal.views.entry' pk=entry.pk %}">
+                                        <!--data-dismiss="modal">-->
+                                        Edit
+                                    </button>
+                                    <button type="button" 
+                                        class="btn btn-default" 
                                         data-dismiss="modal">
                                         Close
                                     </button>
@@ -69,7 +76,16 @@
                         </div>
                     </div>
                 {% else %}
+{% url 'cal.views.entry' year=date.year month=date.month day=date.day hour=start_time.hour minute=start_time.minute as cal_new_entry %}
+                    <div class="col-md-2">
+                        <a href="{{ cal_new_entry }}">
+                            <b>{{ label }}</b>
+                        </a>
+                    </div>
                     <div class="col-md-8">
+                        <a href="{{ cal_new_entry }}">
+                            <p></p>
+                        </a>
                     </div>
                 {% endif %}
             </div>

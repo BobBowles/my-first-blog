@@ -1,0 +1,44 @@
+{% extends 'cal/base.html' %}
+
+{% block head_extra %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    {{ form.media }}
+{% endblock head_extra %}
+
+
+{% block calendar_nav %}
+    {#% url 'cal.views.day' year=date.year month=date.month day=date.day change='next' as cal_nav_next %#}
+    {#% url 'cal.views.day' year=date.year month=date.month day=date.day change='prev' as cal_nav_prev %#}
+    {% url 'cal.views.day' year=date.year month=date.month day=date.day as cal_nav_up %}
+    {{ block.super }}
+{% endblock calendar_nav %}
+
+
+{% block calendar_title %}
+    {% if form.entry.pk %}
+        New
+    {% endif %}
+    Calendar Entry {{ date.day }} {{ month_name }} {{ date.year }}
+{% endblock calendar_title %}
+
+
+{% block calendar_content %}
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8">
+                <form class="post-form" method="POST">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button class="save btn btn-default" type="submit">
+                        Save
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock calendar_content %}
+

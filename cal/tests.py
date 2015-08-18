@@ -11,7 +11,7 @@ from django.core.urlresolvers import reverse
 from django.conf import settings as main_settings
 from . import settings
 from . import views
-import imp
+import importlib as imp         # since Python 3.4
 
 # Create your tests here.
 

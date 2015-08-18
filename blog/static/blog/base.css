@@ -115,8 +115,11 @@ h1, h2, h3, h4 {
 }
 
 /* experiment at styling the TimeWidget */
-/* workaround for silly date in the TimeWidget popout header */
-.datetimepicker th {
+/* TODO: kludgy workaround for silly date in the TimeWidget popout header */
+.datetimepicker-hours th {
+    visibility: hidden !important;
+}
+.datetimepicker-minutes th {
     visibility: hidden !important;
 }
 

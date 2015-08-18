@@ -101,13 +101,19 @@ USE_L10N = True
 
 USE_TZ = True
 
+# the default does not allow time with meridian
+TIME_INPUT_FORMATS = (
+    '%H:%M:%S',
+    '%H:%M',
+    '%I %p',
+    '%I:%M %p',
+    '%I:%M%p',
+    '%H:%M:%S.%f',
+)
+
 # cal app calendar localisation
 #CAL_FIRST_DAY_OF_WEEK = 6              # default = 0 (Monday)
 # CAL_CALENDAR_LOCALE default = system default ('en_GB.UTF-8')
-# NOTE: locales have to be installed in the os, so cannot be automatically
-# tested.
-#CAL_CALENDAR_LOCALE = 'en_GB.UTF-8'    # this is my default
-#CAL_CALENDAR_LOCALE = 'zh_CN.UTF-8'    # this is for my manual tests
 
 
 # Static files (CSS, JavaScript, Images)
