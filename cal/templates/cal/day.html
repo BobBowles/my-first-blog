@@ -3,6 +3,31 @@
 {% block head_extra %}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+    <script>
+
+$(document).on('show.bs.modal', function (event) {
+    console.log('modal loading, cleaning old href data.....');
+    console.log('hidden input orig  is '+$('#next_url').val());
+    $('#next_url').val('');
+    console.log('hidden input now   is '+$('#next_url').val());
+})
+
+function next_url(modal_label, href) {
+    console.log('modal label        is '+modal_label);
+    console.log('href requested     is '+href);
+    $('#next_url').val(href);
+    console.log('hidden input contains '+$('#next_url').val());
+    $('#'+modal_label).modal("hide");
+}
+
+$(document).on('hidden.bs.modal', function (event) {
+    console.log('modal closed, doing redirect....');
+    location.href = $('#next_url').val();
+    console.log('location.href now  is '+location.href);
+})
+    </script>
+
 {% endblock head_extra %}
 
 
@@ -20,21 +45,25 @@
 
 
 {% block calendar_content %}
+<input type="hidden" id="next_url">
 
     <div class="container-fluid">
         {% for label, modal_label, start_time, entry in time_slots %}
             <div class="row">
                 {% if entry %}
+                    {% url 'cal.views.entry' pk=entry.pk as url_edit %}
                     <div class="col-md-2">
                         <b>{{ label }}</b>
                     </div>
                     <div class="col-md-3" 
                         data-toggle="modal" 
+                        data-edit_href="{{ url_edit }}"
                         data-target="#{{ modal_label }}">
                         <i>{{ entry.time }} - {{ entry.time_end }}</i>
                     </div>
                     <div class="col-md-5"
                         data-toggle="modal" 
+                        data-edit_href="{{ url_edit }}"
                         data-target="#{{ modal_label }}">
                         {{ entry.short|safe }}
                     </div>
@@ -61,13 +90,13 @@
                                 <div class="modal-footer">
                                     <button type="button" 
                                         class="btn btn-default" 
-                                        href=
-                                    "{% url 'cal.views.entry' pk=entry.pk %}">
-                                        <!--data-dismiss="modal">-->
+                        onclick="next_url('{{ modal_label }}','{{ url_edit }}');"
+                                        >
                                         Edit
                                     </button>
                                     <button type="button" 
                                         class="btn btn-default" 
+                                        data-href="#"
                                         data-dismiss="modal">
                                         Close
                                     </button>
@@ -91,7 +120,6 @@
             </div>
         {% endfor %}
     </div>
-
 
 {% endblock calendar_content %}
 
