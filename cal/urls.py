@@ -31,5 +31,6 @@ views.entry,
     ),
     url(r'^entry/(?P<pk>\d+)/$', views.entry),
     url(r'^entry/$', views.entry),                  # default is create new
+    url(r'^entry_delete/(?P<pk>\d+)/$', views.entry_delete),
 ]
 

@@ -367,3 +367,19 @@ def entry(
         },
     )
 
+
+@login_required
+def entry_delete(request, pk):
+    """
+    Remove a diary entry.
+    """
+    entry = get_object_or_404(Entry, pk=pk)
+    date = entry.date
+    entry.delete()
+    return redirect(
+        'cal.views.day', 
+        year=date.year,
+        month=date.month,
+        day=date.day,
+    )
+
