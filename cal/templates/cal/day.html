@@ -115,15 +115,13 @@ $(document).on('hidden.bs.modal', function (event) {
                 {% else %}
 {% url 'cal.views.entry' year=date.year month=date.month day=date.day hour=start_time.hour minute=start_time.minute as cal_new_entry %}
                     <div class="col-md-2">
-                        <a href="{{ cal_new_entry }}">
-                            <b>{{ label }}</b>
-                        </a>
+                        <b>{{ label }}</b>
                     </div>
-                    <div class="col-md-8">
-                        <a href="{{ cal_new_entry }}">
+                    <a href="{{ cal_new_entry }}">
+                        <div class="col-md-8">
                             <p></p>
-                        </a>
-                    </div>
+                        </div>
+                    </a>
                 {% endif %}
             </div>
         {% endfor %}
