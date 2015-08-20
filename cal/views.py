@@ -244,28 +244,11 @@ def day_list(request, year=None, month=None, day=None, change=None):
     date = getDate(year, month, day, change)
 
     # create a form for entry of new entries (sic)
-#    timeWidgetOptions = {
-#        'format': 'HH:ii P',
-#        'showMeridian': True,
-#    }
-#    durationWidgetOptions = {
-#        'format': 'hh:ii',
-#    }
     EntriesFormset = formset_factory(
         EntryForm, 
         extra=1, 
         exclude=('creator', 'date'),
         can_delete=True,
-#        widgets = {
-#            'time': TimeWidget(
-#                bootstrap_version=3,
-#                options=timeWidgetOptions,
-#            ),
-#            'duration': TimeWidget(
-#                bootstrap_version=3,
-#                options=durationWidgetOptions,
-#            )
-#        },
     )
 
     # save the changes if this is a post request
@@ -302,6 +285,7 @@ def day_list(request, year=None, month=None, day=None, change=None):
         'date': date,
         'month_name': MONTH_NAMES[date.month-1],
         'user': request.user,
+        'reminders': reminders(request),
     }
     context.update(csrf(request))
     return render_to_response('cal/day_list.html', context)
@@ -364,6 +348,7 @@ def entry(
         {
             'form': form,
             'date': date,
+            'reminders': reminders(request),
         },
     )
 
