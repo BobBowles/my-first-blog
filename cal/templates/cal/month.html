@@ -29,17 +29,18 @@
                         <td class=
 "day{% if day != 0 %} regular{% endif %}{% if current %} current{% endif %}"
                             {% if day != 0 %}
-                                onClick=
-"parent.location='{% url 'cal.views.day' year=date.year month=date.month day=day %}'"
-{#"parent.location='{% url 'cal.views.day_list' year=date.year month=date.month day=day %}'"#}
-                            {% endif %}>
+                                onclick=
+"parent.location='{% url 'cal.views.multi_day' year=date.year month=date.month day=day %}'"
+                            {% endif %}
+                            >
                             {% if day != 0 %}
                                 {{ day }}
+                                <br />
+                                <b>
                                 {% for entry in entries %}
-                                    <br />
-                                    <b>{{entry.creator}}</b>: 
-                                        {{ entry.short|safe }}
+                                    {{entry.creator}}
                                 {% endfor %}
+                                </b>
                             {% endif %}
                         </td>
                     {% endfor %}

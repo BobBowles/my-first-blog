@@ -9,4 +9,5 @@ def get(key, default):
 
 
 CAL_FIRST_DAY_OF_WEEK = get('CAL_FIRST_DAY_OF_WEEK', 0)
+CAL_MULTI_DAY_NUMBER = get('CAL_MULTI_DAY_NUMBER', 3)
 

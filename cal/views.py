@@ -51,7 +51,7 @@ def evaluateTimeSlots():
         thisTime = time.time()
         time += TIME_INC
         timeSlots.append((
-            thisTime.strftime('%I:%M %p'), 
+            thisTime.strftime('%H:%M'), 
             thisTime.strftime('time%H%M'),
             thisTime,
             time.time(),
@@ -198,6 +198,73 @@ def getDate(year, month, day, change):
             dayDelta = datetime.timedelta(days=-1)
         date = date + dayDelta
     return date
+
+
+@login_required
+def multi_day(request, year=None, month=None, day=None, change=None):
+    """
+    Display entries in a calendar-style 4-day layout.
+    """
+    date = getDate(year, month, day, change)
+#    print('Date       is {0}'.format(date))
+
+    # get date information etc for the days to display
+    date_slots = []
+    dayDelta = datetime.timedelta(days=1)
+    for i in range(0, settings.CAL_MULTI_DAY_NUMBER):
+        day = date + i*dayDelta
+        dayHeader = day.strftime('%a %d')
+        modalDateLabel = day.strftime('%a%d%b')
+        date_slots.append((
+            day,
+            dayHeader,
+            modalDateLabel,
+        ))
+    # header information
+#    date_end = date_slots[-1][0]
+#    print('Date Start is {0}'.format(date_slots[0][0]))
+#    print('Date End   is {0}'.format(date_slots[-1][0]))
+#    print('Date       is {0}'.format(date))
+    date_start_head = date_slots[0][0].strftime('%b %d')
+    date_end_head = date_slots[-1][0].strftime('%b %d')
+
+    # obtain the days' entries divided into time slots
+    # rows represent times...
+    time_slots = []
+    for timeLabel, modalTimeLabel, startTime, endTime in TIME_SLOTS:
+        # cols represent days...
+        day_entries = []
+        for day, dayHeader, modalDateLabel in date_slots:
+            entries = Entry.objects\
+                .filter(
+                    date=day, 
+                    time__gte=startTime, 
+                    time__lt=endTime, 
+                    creator=request.user
+            )
+            day_entries.append((
+                modalDateLabel+modalTimeLabel, 
+                entries.first(),
+            ))
+        time_slots.append((
+            timeLabel, 
+            startTime,
+            day_entries,
+        ))
+
+    return render_to_response(
+        'cal/multi_day.html', 
+        {
+            'date': date,
+            'date_start_head': date_start_head,
+            'date_end_head': date_end_head,
+            'user': request.user,
+            'month_name': MONTH_NAMES[date.month-1],
+            'time_slots': time_slots,
+            'date_slots': date_slots,
+            'reminders': reminders(request),
+        },
+    )
 
 
 @login_required

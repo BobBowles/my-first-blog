@@ -1,0 +1,145 @@
+{% extends 'cal/base.html' %}
+
+{% block head_extra %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+    <script>
+/* these three code snippets enable data to be collected from the modals and
+acted upon. */
+
+/* listener cleans out the hidden input data repository when a modal is shown */
+$(document).on('show.bs.modal', function (event) {
+    $('#next_url').val('');
+})
+
+/* method attached to modal action buttons via onclick puts the redirection
+target in the hidden input and hides the modal */
+function next_url(modal_label, href) {
+    $('#next_url').val(href);
+    $('#'+modal_label).modal("hide");
+}
+
+/* listener redirects the web page according to the contents of the hidden input
+after the modal had closed */
+/* NOTE: if the hidden input is empty the default behaviour leaves location.href
+unchanged. */
+$(document).on('hidden.bs.modal', function (event) {
+    location.href = $('#next_url').val();
+})
+    </script>
+
+{% endblock head_extra %}
+
+
+{% block calendar_nav %}
+    {% url 'cal.views.multi_day' year=date.year month=date.month day=date.day change='next' as cal_nav_next %}
+    {% url 'cal.views.multi_day' year=date.year month=date.month day=date.day change='prev' as cal_nav_prev %}
+    {% url 'cal.views.month' year=date.year month=date.month as cal_nav_up %}
+    {{ block.super }}
+{% endblock calendar_nav %}
+
+
+{% block calendar_title %}
+    Calendar  {{ date.year }} {{ date_start_head }} - {{ date_end_head }}
+{% endblock calendar_title %}
+
+
+{% block calendar_content %}
+<input type="hidden" id="next_url">
+
+    <div class="container-fluid">
+        <!-- column headers -->
+        <div class="row">
+            <div class="col-md-1">
+                <i>Time</i>
+            </div>
+            {% for date, day_header, modal_date in date_slots %}
+                <a 
+href="{% url 'cal.views.day' year=date.year month=date.month day=date.day %}"
+                    >
+                    <div class="col-md-2">
+                        <b>
+                            {{ day_header }}
+                        </b>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+        <!-- time slot rows -->
+        {% for label, start_time, day_entries in time_slots %}
+            <div class="row">
+                <div class="col-md-1">
+                    <b>{{ label }}</b>
+                </div>
+                {% for modal_label, entry in day_entries %}
+                    {% if entry %}
+{% url 'cal.views.entry' pk=entry.pk as url_edit %}
+{% url 'cal.views.entry_delete' pk=entry.pk as url_delete %}
+                        <div class="col-md-2"
+                            data-toggle="modal" 
+                            data-edit_href="{{ url_edit }}"
+                            data-target="#{{ modal_label }}">
+                            {{ entry.creator.username }}
+                        </div>
+                        <div class="modal fade" 
+                            id="{{ modal_label }}" role="dialog">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" 
+                                            data-dismiss="modal">&times;
+                                        </button>
+                                        <h4>
+                                            {{ entry.date }}:
+                                            {{ entry.time }} - 
+                                            {{ entry.time_end }}: 
+                                            {{ entry.title }}
+                                        </h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>
+                                            {{ entry.snippet }}
+                                        </p>
+    <textarea disabled rows="20" cols="60">{{ entry.body }}</textarea>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" 
+                                            class="btn btn-danger" 
+                                            onclick=
+"next_url('{{ modal_label }}','{{ url_delete }}');"
+                                            >
+                                            Delete
+                                        </button>
+                                        <button type="button" 
+                                            class="btn btn-default" 
+                                            onclick=
+"next_url('{{ modal_label }}','{{ url_edit }}');"
+                                            >
+                                            Edit
+                                        </button>
+                                        <button type="button" 
+                                            class="btn btn-default" 
+                                            data-href="#"
+                                            data-dismiss="modal">
+                                            Close
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+{% url 'cal.views.entry' year=date.year month=date.month day=date.day hour=start_time.hour minute=start_time.minute as cal_new_entry %}
+                        <a href="{{ cal_new_entry }}">
+                            <div class="col-md-2">
+                                <p></p>
+                            </div>
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock calendar_content %}
+

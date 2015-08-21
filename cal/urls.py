@@ -11,6 +11,14 @@ urlpatterns = [
     url(r'^month/(?P<year>\d+)/(?P<month>\d+)/$', views.month),
     url(r'^month/$', views.month),                  # default is this month
     url(
+r'^multi_day/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/(?P<change>prev|next)/$',
+views.multi_day,
+    ),
+    url(
+r'^multi_day/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$', 
+views.multi_day),
+    url(r'^multi_day/$', views.multi_day),           # default day is today
+    url(
 r'^day/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/(?P<change>prev|next)/$',
 views.day,
     ),
