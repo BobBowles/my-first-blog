@@ -75,19 +75,7 @@ def reminders(request):
         creator=request.user, 
         remind=True,
     ).order_by('date', 'time')
-#    # ...or like this:
-#    return (
-#        Entry.objects.filter(
-#            date=today, 
-#            creator=request.user, 
-#            remind=True,
-#        ) | 
-#        Entry.objects.filter(
-#            date=tomorrow,
-#            creator=request.user,
-#            remind=True,
-#        )
-#    )
+
 
 
 @login_required
@@ -134,7 +122,7 @@ def month(request, year=None, month=None, change=None):
     Display the days in the specified month.
     """
     # default to this month
-    today = timezone.datetime.today()
+    today = timezone.now().date()
     if not year:
         year, month = today.year, today.month
     else:
@@ -184,12 +172,12 @@ def getDate(year, month, day, change):
     Helper function to obtain the date from kwargs.
     """
     # default to today
-    today = timezone.datetime.today()
+    today = timezone.now().date()
     if not year:
         year, month, day = today.year, today.month, today.day
     else:
         year, month, day = int(year), int(month), int(day)
-    date = timezone.datetime(year=year, month=month, day=day)
+    date = timezone.datetime(year=year, month=month, day=day).date()
 
     # handle day change with year and month rollover
     if change:
@@ -205,8 +193,9 @@ def multi_day(request, year=None, month=None, day=None, change=None):
     """
     Display entries in a calendar-style 4-day layout.
     """
+    today = timezone.now().date()
+    now = timezone.now().time()
     date = getDate(year, month, day, change)
-#    print('Date       is {0}'.format(date))
 
     # get date information etc for the days to display
     date_slots = []
@@ -220,11 +209,8 @@ def multi_day(request, year=None, month=None, day=None, change=None):
             dayHeader,
             modalDateLabel,
         ))
+
     # header information
-#    date_end = date_slots[-1][0]
-#    print('Date Start is {0}'.format(date_slots[0][0]))
-#    print('Date End   is {0}'.format(date_slots[-1][0]))
-#    print('Date       is {0}'.format(date))
     date_start_head = date_slots[0][0].strftime('%b %d')
     date_end_head = date_slots[-1][0].strftime('%b %d')
 
@@ -234,6 +220,9 @@ def multi_day(request, year=None, month=None, day=None, change=None):
     for timeLabel, modalTimeLabel, startTime, endTime in TIME_SLOTS:
         # cols represent days...
         day_entries = []
+        currentTime = (now >= startTime and now < endTime)
+        if (now >= startTime and now < endTime):
+            print('TimeLabel {0} is CURRENT'.format(timeLabel))
         for day, dayHeader, modalDateLabel in date_slots:
             entries = Entry.objects\
                 .filter(
@@ -242,9 +231,12 @@ def multi_day(request, year=None, month=None, day=None, change=None):
                     time__lt=endTime, 
                     creator=request.user
             )
+            if (currentTime and (day == today)):
+                print('Day {0} is CURRENT at {1}'.format(day, startTime))
             day_entries.append((
                 modalDateLabel+modalTimeLabel, 
                 entries.first(),
+                (currentTime and day == today),
             ))
         time_slots.append((
             timeLabel, 
@@ -273,6 +265,8 @@ def day(request, year=None, month=None, day=None, change=None):
     Display entries in a particular day in a calendar-style day view.
     """
     date = getDate(year, month, day, change)
+    currentDate = (date == timezone.now().date())
+    now = timezone.now().time()
 
     # obtain the day's entries divided into time slots
     time_slots = []
@@ -289,6 +283,7 @@ def day(request, year=None, month=None, day=None, change=None):
             modalLabel,
             startTime,
             entries.first(),
+            (currentDate and (now >= startTime and now < endTime)),
         ))
 
     return render_to_response(

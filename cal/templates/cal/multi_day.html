@@ -72,11 +72,11 @@ href="{% url 'cal.views.day' year=date.year month=date.month day=date.day %}"
                 <div class="col-md-1">
                     <b>{{ label }}</b>
                 </div>
-                {% for modal_label, entry in day_entries %}
+                {% for modal_label, entry, current in day_entries %}
                     {% if entry %}
 {% url 'cal.views.entry' pk=entry.pk as url_edit %}
 {% url 'cal.views.entry_delete' pk=entry.pk as url_delete %}
-                        <div class="col-md-2"
+                        <div class="col-md-2{% if current %} current{% endif %}"
                             data-toggle="modal" 
                             data-edit_href="{{ url_edit }}"
                             data-target="#{{ modal_label }}">
@@ -131,7 +131,8 @@ href="{% url 'cal.views.day' year=date.year month=date.month day=date.day %}"
                     {% else %}
 {% url 'cal.views.entry' year=date.year month=date.month day=date.day hour=start_time.hour minute=start_time.minute as cal_new_entry %}
                         <a href="{{ cal_new_entry }}">
-                            <div class="col-md-2">
+                            <div class=
+                                "col-md-2{% if current %} current{% endif %}">
                                 <p></p>
                             </div>
                         </a>

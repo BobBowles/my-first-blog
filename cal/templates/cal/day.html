@@ -49,7 +49,7 @@ $(document).on('hidden.bs.modal', function (event) {
 <input type="hidden" id="next_url">
 
     <div class="container-fluid">
-        {% for label, modal_label, start_time, entry in time_slots %}
+        {% for label, modal_label, start_time, entry, current in time_slots %}
             <div class="row">
                 {% if entry %}
                     {% url 'cal.views.entry' pk=entry.pk as url_edit %}
@@ -57,7 +57,7 @@ $(document).on('hidden.bs.modal', function (event) {
                     <div class="col-md-2">
                         <b>{{ label }}</b>
                     </div>
-                    <div class="col-md-3" 
+                    <div class="col-md-3{% if current %} current{% endif %}" 
                         data-toggle="modal" 
                         data-edit_href="{{ url_edit }}"
                         data-target="#{{ modal_label }}">
@@ -118,7 +118,7 @@ $(document).on('hidden.bs.modal', function (event) {
                         <b>{{ label }}</b>
                     </div>
                     <a href="{{ cal_new_entry }}">
-                        <div class="col-md-8">
+                        <div class="col-md-8{% if current %} current{% endif %}">
                             <p></p>
                         </div>
                     </a>
