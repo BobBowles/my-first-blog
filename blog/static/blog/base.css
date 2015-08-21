@@ -91,19 +91,19 @@ h1, h2, h3, h4 {
 }
 
 .weeks th {
-    width: 14%;
     font-weight: normal;
 }
 
 .day {
+    min-width: 120px;
     vertical-align: top;
     font-style: italic;
-    padding: 30px;
+    padding: 2px;
 }
 
 .day.regular {
     font-style: normal !important;
-    height: 200px;
+    height: 85px;
 }
 
 .day.regular:hover {
