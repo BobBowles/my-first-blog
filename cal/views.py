@@ -39,7 +39,7 @@ def evaluateTimeSlots():
     Calculate labels and starting times for diary day display.
     Returns a list of labels and start/end times of time slots.
     """
-    DUMMY_DAY = timezone.datetime.today()
+    DUMMY_DAY = timezone.localtime(timezone.now()).date()
     TIME_START = datetime.time(hour=6)
     TIME_FINISH = datetime.time(hour=20)
     TIME_INC = datetime.timedelta(minutes=30)
@@ -67,7 +67,7 @@ def reminders(request):
     """
     Data for the reminder sidebar.
     """
-    today = timezone.now()
+    today = timezone.localtime(timezone.now()).date()
     tomorrow = today + datetime.timedelta(days=1)
     # we can merge two queries together easily like this:...
     return Entry.objects.filter(
@@ -84,7 +84,7 @@ def year(request, year=None):
     List three years per page.
     """
 
-    now = timezone.now()
+    now = timezone.localtime(timezone.now()).date()
     if year:
         year = int(year)
     else:
@@ -122,12 +122,12 @@ def month(request, year=None, month=None, change=None):
     Display the days in the specified month.
     """
     # default to this month
-    today = timezone.now().date()
+    today = timezone.localtime(timezone.now()).date()
     if not year:
         year, month = today.year, today.month
     else:
         year, month = int(year), int(month)
-    date = timezone.datetime(year=year, month=month, day=15)
+    date = timezone.datetime(year=year, month=month, day=15).date()
 
     # handle month change, with year rollover
     if change:
@@ -172,7 +172,7 @@ def getDate(year, month, day, change):
     Helper function to obtain the date from kwargs.
     """
     # default to today
-    today = timezone.now().date()
+    today = timezone.localtime(timezone.now()).date()
     if not year:
         year, month, day = today.year, today.month, today.day
     else:
@@ -193,8 +193,8 @@ def multi_day(request, year=None, month=None, day=None, change=None):
     """
     Display entries in a calendar-style 4-day layout.
     """
-    today = timezone.now().date()
-    now = timezone.now().time()
+    today = timezone.localtime(timezone.now()).date()
+    now = timezone.localtime(timezone.now()).time()
     date = getDate(year, month, day, change)
 
     # get date information etc for the days to display
@@ -266,7 +266,7 @@ def day(request, year=None, month=None, day=None, change=None):
     """
     date = getDate(year, month, day, change)
     currentDate = (date == timezone.now().date())
-    now = timezone.now().time()
+    now = timezone.localtime(timezone.now()).time()
 
     # obtain the day's entries divided into time slots
     time_slots = []
