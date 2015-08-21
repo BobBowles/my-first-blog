@@ -64,6 +64,11 @@ href="http://fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext" />
                                 <h1>Alerts</h1>
                             </div>
                             {% for reminder in reminders %}
+                                <p>
+                                    {{ reminder.date }} - 
+                                    {{ reminder.time }}: 
+                                    {{ reminder.creator }}
+                                </p>
                                 <p> {{ reminder.short|safe }}</p>
                             {% endfor %}
                         </div>
