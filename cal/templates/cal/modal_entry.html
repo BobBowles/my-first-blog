@@ -1,5 +1,5 @@
 <div class="modal fade" 
-    id="{{ modal_label }}"
+    id="modal{{ datetime_slug }}"
     role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -25,13 +25,15 @@
             <div class="modal-footer">
                 <button type="button" 
                     class="btn btn-danger" 
-                    onclick="next_url('{{ modal_label }}','{{ url_delete }}');"
+                    onclick=
+                    "next_url('modal{{ datetime_slug }}','{{ url_delete }}');"
                     >
                     Delete
                 </button>
                 <button type="button" 
                     class="btn btn-default" 
-                    onclick="next_url('{{ modal_label }}','{{ url_edit }}');"
+                    onclick=
+                    "next_url('modal{{ datetime_slug }}','{{ url_edit }}');"
                     >
                     Edit
                 </button>

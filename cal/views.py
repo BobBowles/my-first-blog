@@ -459,6 +459,19 @@ def entry(
 
 
 @login_required
+def entry_update(request, pk=None, datetime=None, time=None):
+    """
+    Update an entry's details via ajax. 
+    At present only the date and time can be changed this way.
+    """
+    json_data = json.dumps({'message': 'Hello Ajax!'})
+    return HttpResponse(
+        json_data,
+        mimetype='application/json',
+    )
+
+
+@login_required
 def entry_delete(request, pk):
     """
     Remove a diary entry.
