@@ -8,6 +8,7 @@
 /* these three code snippets enable data to be collected from the modals and
 acted upon. */
 
+
 /* listener cleans out the hidden input data repository when a modal is shown */
 $(document).on('show.bs.modal', function (event) {
     $('#next_url').val('');
@@ -21,11 +22,11 @@ function next_url(modal_label, href) {
 }
 
 /* listener redirects the web page according to the contents of the hidden input
-after the modal had closed */
-/* NOTE: if the hidden input is empty the default behaviour leaves location.href
-unchanged. */
+after the modal has closed */
 $(document).on('hidden.bs.modal', function (event) {
-    location.href = $('#next_url').val();
+    if ($('#next_url').val()) {
+        location.href = $('#next_url').val();
+    }
 })
     </script>
 
@@ -33,6 +34,6 @@ $(document).on('hidden.bs.modal', function (event) {
 
 
 {% block calendar_content %} {# invoke this as super from child template #}
-<input type="hidden" id="next_url">
+<input type="hidden" id="next_url"> <!-- storage for modal redirect trigger -->
 {% endblock calendar_content %}
 

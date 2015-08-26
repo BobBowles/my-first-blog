@@ -452,6 +452,7 @@ def entry(
         {
             'form': form,
             'date': entry.date,
+            'nav_slug': entry.date.strftime(DATE_SLUG_FORMAT),
             'reminders': reminders(request),
         },
     )

@@ -8,9 +8,9 @@
 
 
 {% block calendar_nav %}
-    {#% url 'cal.views.day' year=date.year month=date.month day=date.day change='next' as cal_nav_next %#}
-    {#% url 'cal.views.day' year=date.year month=date.month day=date.day change='prev' as cal_nav_prev %#}
-    {% url 'cal.views.day' year=date.year month=date.month day=date.day as cal_nav_up %}
+    {% url 'cal.views.day' slug=nav_slug change='next' as cal_nav_next %}
+    {% url 'cal.views.day' slug=nav_slug change='prev' as cal_nav_prev %}
+    {% url 'cal.views.day' slug=nav_slug as cal_nav_up %}
     {{ block.super }}
 {% endblock calendar_nav %}
 
