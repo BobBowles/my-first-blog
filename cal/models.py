@@ -15,7 +15,7 @@ DEFAULT_TIME = datetime.time(hour=12)
 
 class Entry(models.Model):
     """
-    A calendar entry, some event entered in the calendar.
+    A diary entry, some event entered in the calendar.
 
     Entries need to be able to compare times and do basic temporal arithmetic.
     To do this (I think) we need to implement rich comparator methods so one

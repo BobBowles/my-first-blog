@@ -2,9 +2,9 @@
 
 
 {% block calendar_nav %}
-    {% url 'cal.views.day' year=date.year month=date.month day=date.day change='next' as cal_nav_next %}
-    {% url 'cal.views.day' year=date.year month=date.month day=date.day change='prev' as cal_nav_prev %}
-    {% url 'cal.views.multi_day' year=date.year month=date.month day=date.day as cal_nav_up %}
+    {% url 'cal.views.day' slug=nav_slug change='next' as cal_nav_next %}
+    {% url 'cal.views.day' slug=nav_slug change='prev' as cal_nav_prev %}
+    {% url 'cal.views.multi_day' slug=nav_slug as cal_nav_up %}
     {{ block.super }}
 {% endblock calendar_nav %}
 
@@ -20,22 +20,18 @@
     <div class="container-fluid">
         {% for label, modal_label, start_time, entry, current in time_slots %}
             <div class="row">
+                <div class="col-md-2">
+                    <b>{{ label }}</b>
+                </div>
                 {% if entry %}
                     {% url 'cal.views.entry' pk=entry.pk as url_edit %}
                     {% url 'cal.views.entry_delete' pk=entry.pk as url_delete %}
-                    <div class="col-md-2">
-                        <b>{{ label }}</b>
-                    </div>
-                    <div class="col-md-3{% if current %} current{% endif %}" 
+                    <div class="col-md-8{% if current %} current{% endif %}" 
                         data-toggle="modal" 
                         data-edit_href="{{ url_edit }}"
                         data-target="#{{ modal_label }}">
-                        <i>{{ entry.time }} - {{ entry.time_end }}</i>
-                    </div>
-                    <div class="col-md-5"
-                        data-toggle="modal" 
-                        data-edit_href="{{ url_edit }}"
-                        data-target="#{{ modal_label }}">
+                        <i>{{ entry.time }} - {{ entry.time_end }}:</i>
+                        <b>{{ entry.creator.username }}</b> -
                         {{ entry.short|safe }}
                     </div>
                     <div class="modal fade" id="{{ modal_label }}" role="dialog">
@@ -46,7 +42,6 @@
                                         data-dismiss="modal">&times;
                                     </button>
                                     <h4>
-                <!--span class="glyphicon glyphicon-file"></span-->
                                         {{ entry.time }} - 
                                         {{ entry.time_end }}: 
                                         {{ entry.title }}
@@ -82,10 +77,7 @@
                         </div>
                     </div>
                 {% else %}
-{% url 'cal.views.entry' year=date.year month=date.month day=date.day hour=start_time.hour minute=start_time.minute as cal_new_entry %}
-                    <div class="col-md-2">
-                        <b>{{ label }}</b>
-                    </div>
+                    {% url 'cal.views.entry' modal_label as cal_new_entry %}
                     <a href="{{ cal_new_entry }}">
                         <div class="col-md-8{% if current %} current{% endif %}">
                             <p></p>

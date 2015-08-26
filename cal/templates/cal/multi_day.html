@@ -2,8 +2,8 @@
 
 
 {% block calendar_nav %}
-    {% url 'cal.views.multi_day' year=date.year month=date.month day=date.day change='next' as cal_nav_next %}
-    {% url 'cal.views.multi_day' year=date.year month=date.month day=date.day change='prev' as cal_nav_prev %}
+    {% url 'cal.views.multi_day' slug=nav_slug change='next' as cal_nav_next %}
+    {% url 'cal.views.multi_day' slug=nav_slug change='prev' as cal_nav_prev %}
     {% url 'cal.views.month' year=date.year month=date.month as cal_nav_up %}
     {{ block.super }}
 {% endblock calendar_nav %}
@@ -23,10 +23,8 @@
             <div class="col-md-1">
                 <i>Time</i>
             </div>
-            {% for date, day_header, modal_date in date_slots %}
-                <a 
-href="{% url 'cal.views.day' year=date.year month=date.month day=date.day %}"
-                    >
+            {% for date, day_header, date_slug in date_slots %}
+                <a href="{% url 'cal.views.day' slug=date_slug %}">
                     <div class="col-md-2">
                         <b>
                             {{ day_header }}
@@ -47,12 +45,14 @@ href="{% url 'cal.views.day' year=date.year month=date.month day=date.day %}"
 {% url 'cal.views.entry_delete' pk=entry.pk as url_delete %}
                         <div class="col-md-2{% if current %} current{% endif %}"
                             data-toggle="modal" 
-                            data-edit_href="{{ url_edit }}"
-                            data-target="#{{ modal_label }}">
+                            data-target="#{{ modal_label }}"
+                            id="{{ entry.pk }}" 
+                            >
                             {{ entry.creator.username }}
                         </div>
                         <div class="modal fade" 
-                            id="{{ modal_label }}" role="dialog">
+                            id="{{ modal_label }}"
+                            role="dialog">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -98,7 +98,7 @@ href="{% url 'cal.views.day' year=date.year month=date.month day=date.day %}"
                             </div>
                         </div>
                     {% else %}
-{% url 'cal.views.entry' year=date.year month=date.month day=date.day hour=start_time.hour minute=start_time.minute as cal_new_entry %}
+                        {% url 'cal.views.entry' modal_label as cal_new_entry %}
                         <a href="{{ cal_new_entry }}">
                             <div class=
                                 "col-md-2{% if current %} current{% endif %}">

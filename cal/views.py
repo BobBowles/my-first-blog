@@ -34,6 +34,12 @@ DAY_NAMES = (
 )
 
 
+DATE_SLUG_FORMAT = '%Y-%m-%d'
+TIME_FORMAT = '%H:%M'
+TIME_SLUG_FORMAT = '%H-%M'
+DATETIME_SLUG_FORMAT = '%Y-%m-%d_%H-%M'
+
+
 def evaluateTimeSlots():
     """
     Calculate labels and starting times for diary day display.
@@ -51,8 +57,8 @@ def evaluateTimeSlots():
         thisTime = time.time()
         time += TIME_INC
         timeSlots.append((
-            thisTime.strftime('%H:%M'), 
-            thisTime.strftime('time%H%M'),
+            thisTime.strftime(TIME_FORMAT), 
+            thisTime.strftime(TIME_SLUG_FORMAT),
             thisTime,
             time.time(),
         ))
@@ -145,11 +151,13 @@ def month(request, year=None, month=None, change=None):
     # process all the days in the month
     for day in month_days:
         entries = current = False
+        nav_slug = None
         if day:
             dayDate = datetime.date(year=date.year, month=date.month, day=day)
             entries = Entry.objects.filter(date=dayDate)
+            nav_slug = dayDate.strftime(DATE_SLUG_FORMAT)
             current = (dayDate == today)
-        weeks[week_no].append((day, entries, current))
+        weeks[week_no].append((day, nav_slug, entries, current))
         if len(weeks[week_no]) == 7:
             weeks.append([])
             week_no += 1
@@ -172,6 +180,7 @@ def getDate(year, month, day, change):
     Helper function to obtain the date from kwargs.
     """
     # default to today
+    print('DEPRECATED:  Getting kwargs date...')
     today = timezone.localtime(timezone.now()).date()
     if not year:
         year, month, day = today.year, today.month, today.day
@@ -188,14 +197,39 @@ def getDate(year, month, day, change):
     return date
 
 
+def getDateFromSlug(slug, change):
+    """
+    Helper to derive a date from an iso format slug.
+    """
+    # default to today
+    print('Getting slug date...')
+    today = timezone.localtime(timezone.now()).date()
+    date = None
+    if not slug:
+        date = today
+    else:
+        date = datetime.datetime.strptime(slug, DATE_SLUG_FORMAT)
+
+    # handle day change with year and month rollover
+    if change:
+        dayDelta = datetime.timedelta(days=1)
+        if change == 'prev':
+            dayDelta = datetime.timedelta(days=-1)
+        date = date + dayDelta
+    return date.date()
+
+
 @login_required
-def multi_day(request, year=None, month=None, day=None, change=None):
+def multi_day(request, year=None, month=None, day=None, slug=None, change=None):
     """
     Display entries in a calendar-style 4-day layout.
     """
     today = timezone.localtime(timezone.now()).date()
     now = timezone.localtime(timezone.now()).time()
-    date = getDate(year, month, day, change)
+    date = (
+        getDate(year, month, day, change) if year # deprecated
+        else getDateFromSlug(slug, change)
+    )
 
     # get date information etc for the days to display
     date_slots = []
@@ -203,27 +237,26 @@ def multi_day(request, year=None, month=None, day=None, change=None):
     for i in range(0, settings.CAL_MULTI_DAY_NUMBER):
         day = date + i*dayDelta
         dayHeader = day.strftime('%a %d')
-        modalDateLabel = day.strftime('%a%d%b')
+        date_slug = day.strftime(DATE_SLUG_FORMAT)
         date_slots.append((
             day,
             dayHeader,
-            modalDateLabel,
+            date_slug,
         ))
 
     # header information
     date_start_head = date_slots[0][0].strftime('%b %d')
     date_end_head = date_slots[-1][0].strftime('%b %d')
+    nav_slug = date_slots[0][0].strftime(DATE_SLUG_FORMAT)
 
     # obtain the days' entries divided into time slots
     # rows represent times...
     time_slots = []
-    for timeLabel, modalTimeLabel, startTime, endTime in TIME_SLOTS:
+    for timeLabel, time_slug, startTime, endTime in TIME_SLOTS:
         # cols represent days...
         day_entries = []
         currentTime = (now >= startTime and now < endTime)
-        if (now >= startTime and now < endTime):
-            print('TimeLabel {0} is CURRENT'.format(timeLabel))
-        for day, dayHeader, modalDateLabel in date_slots:
+        for day, dayHeader, date_slug in date_slots:
             entries = Entry.objects\
                 .filter(
                     date=day, 
@@ -231,10 +264,8 @@ def multi_day(request, year=None, month=None, day=None, change=None):
                     time__lt=endTime, 
                     creator=request.user
             )
-            if (currentTime and (day == today)):
-                print('Day {0} is CURRENT at {1}'.format(day, startTime))
             day_entries.append((
-                modalDateLabel+modalTimeLabel, 
+                '_'.join((date_slug, time_slug)), 
                 entries.first(),
                 (currentTime and day == today),
             ))
@@ -250,6 +281,7 @@ def multi_day(request, year=None, month=None, day=None, change=None):
             'date': date,
             'date_start_head': date_start_head,
             'date_end_head': date_end_head,
+            'nav_slug': nav_slug,
             'user': request.user,
             'month_name': MONTH_NAMES[date.month-1],
             'time_slots': time_slots,
@@ -260,17 +292,21 @@ def multi_day(request, year=None, month=None, day=None, change=None):
 
 
 @login_required
-def day(request, year=None, month=None, day=None, change=None):
+def day(request, year=None, month=None, day=None, slug=None, change=None):
     """
     Display entries in a particular day in a calendar-style day view.
     """
-    date = getDate(year, month, day, change)
+    date = (
+        getDate(year, month, day, change) if year # deprecated
+        else getDateFromSlug(slug, change)
+    )
     currentDate = (date == timezone.now().date())
     now = timezone.localtime(timezone.now()).time()
+    date_slug = date.strftime(DATE_SLUG_FORMAT)
 
     # obtain the day's entries divided into time slots
     time_slots = []
-    for timeLabel, modalLabel, startTime, endTime in TIME_SLOTS:
+    for timeLabel, time_slug, startTime, endTime in TIME_SLOTS:
         entries = Entry.objects\
             .filter(
                 date=date, 
@@ -280,7 +316,7 @@ def day(request, year=None, month=None, day=None, change=None):
         )
         time_slots.append((
             timeLabel, 
-            modalLabel,
+            '_'.join((date_slug, time_slug)),
             startTime,
             entries.first(),
             (currentDate and (now >= startTime and now < endTime)),
@@ -290,6 +326,7 @@ def day(request, year=None, month=None, day=None, change=None):
         'cal/day.html', 
         {
             'date': date,
+            'nav_slug': date_slug,
             'user': request.user,
             'month_name': MONTH_NAMES[date.month-1],
             'time_slots': time_slots,
@@ -357,23 +394,24 @@ def day_list(request, year=None, month=None, day=None, change=None):
 def entry(
     request, 
     pk=None, 
-    year=None, 
-    month=None, 
-    day=None, 
-    hour=None, 
-    minute=None,
+    year=None, month=None, day=None, hour=None, minute=None, # deprecated
+    slug=None,
     ):
     """
     Edit/create an entry for the diary.
     """
+    # defaults are here and now if no date/time is provided
     date = timezone.now().date()
     time = timezone.now().time()
     entry = None
+    
+    #
     if pk:                              # edit existing entry
         entry = get_object_or_404(Entry, pk=pk)
-    else:                               # create new
-        # determine the date and time to use - now is the default
-        if year:                        # use date/time provided
+    else:                               # make a new entry
+        # determine the date and time to use
+        if year:                        # deprecated
+            print('Entry using DEPRECATED kwargs year, etc.')
             date = datetime.date(
                 year=int(year),
                 month=int(month),
@@ -383,6 +421,9 @@ def entry(
                 hour=int(hour),
                 minute=int(minute),
             )
+        elif slug:
+            date_time = datetime.datetime.strptime(slug, DATETIME_SLUG_FORMAT)
+            date, time = date_time.date(), date_time.time()
         entry = Entry(
             date=date,
             time=time,
@@ -394,13 +435,14 @@ def entry(
         if form.is_valid():
             entry = form.save(commit=False)
             # do any necessary tidying of entry attributes
-            #
+            
             entry.save()
+
+            # in case the date has been edited re-calculate the navigation slug
             return redirect(
                 'cal.views.day', 
-                year=entry.date.year, 
-                month=entry.date.month,
-                day=entry.date.day,
+                #year=entry.date.year, month=entry.date.month, day=entry.date.day,
+                slug=entry.date.strftime(DATE_SLUG_FORMAT),
             )
     else:
         form = EntryForm(instance=entry)
@@ -409,7 +451,7 @@ def entry(
         'cal/entry.html', 
         {
             'form': form,
-            'date': date,
+            'date': entry.date,
             'reminders': reminders(request),
         },
     )
