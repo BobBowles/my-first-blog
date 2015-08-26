@@ -42,7 +42,7 @@ $(document).on('hidden.bs.modal', function (event) {
 
 /* get hold of the csrf token for posting, setup ajax to use it */
 var csrftoken = Cookies.get('csrftoken');
-console.log('csrf token is '+csrftoken);
+//console.log('csrf token is '+csrftoken);
 
 /* these are straight from the Django ajax manual pages */
 function csrfSafeMethod(method) {

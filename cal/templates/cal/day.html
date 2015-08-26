@@ -34,8 +34,8 @@
                     ondragend="dragend(event);"
                     >
                     {% if entry %}
-                {% url 'cal.views.entry' pk=entry.pk as url_edit %}
-                {% url 'cal.views.entry_delete' pk=entry.pk as url_delete %}
+{% url 'cal.views.entry' pk=entry.pk as url_edit %}
+{% url 'cal.views.entry_delete' pk=entry.pk as url_delete %}
                         <div 
                             id="{{ entry.pk }}"
                             data-toggle="modal" 
@@ -51,7 +51,7 @@
                     {% endif %}
                 </div>
                 <div class="col-md-1">
-                    {% url 'cal.views.entry' modal_label as cal_new_entry %}
+{% url 'cal.views.entry' slug=datetime_slug as cal_new_entry %}
                     <button type="button" 
                         class="btn btn-default btn-xs new"
                         onclick="location.href='{{ cal_new_entry }}'">
