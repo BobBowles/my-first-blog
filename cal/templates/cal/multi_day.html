@@ -40,39 +40,41 @@
                     <b>{{ label }}</b>
                 </div>
                 {% for datetime_slug, entry, current in day_entries %}
-                    <div 
-                        id="{{ datetime_slug }}"
-                        class=
-                    "col-md-1 droptarget{% if current %} current{% endif %}"
-                        ondragenter="dragenter(event);"
-                        ondragleave="dragleave(event);"
-                        ondragover="dragover(event);"
-                        ondrop="drop(event);"
-                        ondragend="dragend(event);"
-                        >
-                        {% if entry %}
-{% url 'cal.views.entry' pk=entry.pk as url_edit %}
-{% url 'cal.views.entry_delete' pk=entry.pk as url_delete %}
-                            <div 
-                                data-toggle="modal" 
-                                data-target="#modal{{ datetime_slug }}"
-                                id="{{ entry.pk }}" 
-                                draggable="True"
-                                ondragstart="drag(event);"
-                                >
-                                <b>{{ entry.creator.username }}</b>
-                            </div>
-                            {% include 'cal/modal_entry.html' %}
-                        {% endif %}
-                    </div>
-                    <div class="col-md-1">
-{% url 'cal.views.entry' slug=datetime_slug as cal_new_entry %}
-                        <button type="button" 
-                            class="btn btn-default btn-xs new"
-                            onclick="location.href='{{ cal_new_entry }}'">
-                            New
-                        </button>
-                    </div>
+                    <span class="parent">　<!-- common parent -->
+                        <div 
+                            id="{{ datetime_slug }}"
+                            class=
+                        "col-md-1 droptarget{% if current %} current{% endif %}"
+                            ondragenter="dragenter(event);"
+                            ondragleave="dragleave(event);"
+                            ondragover="dragover(event);"
+                            ondrop="drop(event);"
+                            ondragend="dragend(event);"
+                            > <!-- droptarget -->
+                            {% if entry %}
+    {% url 'cal.views.entry' pk=entry.pk as url_edit %}
+    {% url 'cal.views.entry_delete' pk=entry.pk as url_delete %}
+                                <div 
+                                    data-toggle="modal" 
+                                    data-target="#modal{{ datetime_slug }}"
+                                    id="{{ entry.pk }}" 
+                                    draggable="True"
+                                    ondragstart="drag(event);"
+                                    >
+                                    <b>{{ entry.creator.username }}</b>
+                                </div>
+                                {% include 'cal/modal_entry.html' %}
+                            {% endif %}
+                        </div> <!-- droptarget -->
+                        <div class="col-md-1"> <!-- parent of button -->
+    {% url 'cal.views.entry' slug=datetime_slug as cal_new_entry %}
+                            <button type="button" 
+                                class="btn btn-default btn-xs new"
+                                onclick="location.href='{{ cal_new_entry }}'">
+                                New
+                            </button>
+                        </div> <!-- parent of button -->
+                    </span> <!-- common parent -->
                 {% endfor %}
             </div>
         {% endfor %}
