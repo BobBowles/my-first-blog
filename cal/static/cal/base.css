@@ -79,6 +79,13 @@
     -webkit-user-drag: element;
     cursor: move; /* alter cursor shape as a visual cue */
 }
-
+.dragover [draggable] {
+    background: #ff8800;
+    border: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
 
 

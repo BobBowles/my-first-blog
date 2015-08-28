@@ -145,16 +145,13 @@ function drop(ev) {
         type: "post",
         data: {pk: pk, slug: slug},
         success: function(result) {
-            //alert(result['message']);
             /* if the post succeeds continue with the drop */
             ev.target.appendChild(document.getElementById(pk));
             console.log('Dropped target in ['+ev.target.id+']');
         },
         error: function (xhr, ajaxOptions, thrownError) {
             console.log(xhr);
-            var message = $.parseJSON(xhr).msg;
-            alert(message);
-            //alert(xhr.responseText);
+            alert('Cannot put entry there. Try a different day or time.');
       }
     });
     console.log('Finalising css on ['+ev.target.id+']');
