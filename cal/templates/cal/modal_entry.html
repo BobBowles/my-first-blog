@@ -26,14 +26,14 @@
                 <button type="button" 
                     class="btn btn-danger" 
                     onclick=
-                    "next_url('modal{{ datetime_slug }}','{{ url_delete }}');"
+                    "next_url('modal{{ entry.pk }}','{{ url_delete }}');"
                     >
                     Delete
                 </button>
                 <button type="button" 
                     class="btn btn-default" 
                     onclick=
-                    "next_url('modal{{ datetime_slug }}','{{ url_edit }}');"
+                    "next_url('modal{{ entry.pk }}','{{ url_edit }}');"
                     >
                     Edit
                 </button>
