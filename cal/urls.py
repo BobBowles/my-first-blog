@@ -40,11 +40,11 @@ urlpatterns = [
 
 
 # TODO: for ajax
-    url(r'^entry_update/(?P<pk>\d+)/(?P<slug>\d{4}\-\d\d\-\d\d\+\d\d:\d\d)/$', 
-        views.entry_update,
-    ),
-    url(r'^entry_update/(?P<pk>\d+)/(?P<slug>\d\d:\d\d)/$', views.entry_update),
-    url(r'^entry_update/$', views.entry_update),    # placeholder
+#    url(r'^entry_update/(?P<pk>\d+)/(?P<slug>\d{4}\-\d\d\-\d\d\+\d\d:\d\d)/$', 
+#        views.entry_update,
+#    ),
+#    url(r'^entry_update/(?P<pk>\d+)/(?P<slug>\d\d:\d\d)/$', views.entry_update),
+    url(r'^entry_update/$', views.entry_update),
 
 
     # the following are redundant and not maintained

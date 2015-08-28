@@ -88,14 +88,11 @@ class Entry(models.Model):
         return True
 
 
-    def clean(self):
+    def clean(self, *args, **kwargs):
         """
         Override Model method to validate the content. We need the entry to be 
         invalid if it clashes in time with a pre-existing entry.
         """
-        # do basic housekeeping first
-        #super(models.Model, self).clean()
-
         # get the day's existing entries
         savedEntries = Entry.objects.filter(date=self.date)
 
@@ -107,6 +104,17 @@ class Entry(models.Model):
                     raise ValidationError(
             'Time clash not allowed. Please change the date/time/duration.'
                     )
+        # now do the standard field validation
+        super(Entry, self).clean(*args, **kwargs)
+
+
+    def save(self, *args, **kwargs):
+        """
+        Override the parent method to ensure custom validation in clean() is 
+        done.
+        """
+        self.full_clean()
+        super(Entry, self).save(*args, **kwargs)
 
 
     class Meta:

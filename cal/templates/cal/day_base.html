@@ -137,21 +137,26 @@ function drop(ev) {
     ev.preventDefault();
     var pk = ev.dataTransfer.getData("text/html");
     console.log('pk from data transfer is ['+pk+']');
+    var slug = ev.target.id;
     /* ajax stuff goes here */
-    url = "{% url 'cal.views.entry_update' %}" /* add variables here */
-    /*$.ajax({
+    url = "{% url 'cal.views.entry_update' %}"
+    $.ajax({
         url: url,
         type: "post",
+        data: {pk: pk, slug: slug},
         success: function(result) {
-            alert(result['message']);*/
+            //alert(result['message']);
             /* if the post succeeds continue with the drop */
             ev.target.appendChild(document.getElementById(pk));
             console.log('Dropped target in ['+ev.target.id+']');
-        /*},
-        error: function(result) { 
-            alert("Got an error dude");
-        }
-    });*/
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            console.log(xhr);
+            var message = $.parseJSON(xhr).msg;
+            alert(message);
+            //alert(xhr.responseText);
+      }
+    });
     console.log('Finalising css on ['+ev.target.id+']');
     ev.target.classList.remove('dragover');  // clean the css
 }

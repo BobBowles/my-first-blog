@@ -10,11 +10,12 @@ from django.utils import timezone
 import calendar
 from django.forms.formsets import formset_factory
 from django.core.context_processors import csrf
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 import locale
 from . import settings
+#import json
 
 # Create your views here.
 
@@ -217,6 +218,15 @@ def getDateFromSlug(slug, change):
             dayDelta = datetime.timedelta(days=-1)
         date = date + dayDelta
     return date.date()
+
+
+def getDatetimeFromSlug(slug):
+    """
+    Helper method to derive a date and time from a datetime slug.
+    """
+    date_time = datetime.datetime.strptime(slug, DATETIME_SLUG_FORMAT)
+    return date_time.date(), date_time.time()
+
 
 
 @login_required
@@ -422,8 +432,7 @@ def entry(
                 minute=int(minute),
             )
         elif slug:
-            date_time = datetime.datetime.strptime(slug, DATETIME_SLUG_FORMAT)
-            date, time = date_time.date(), date_time.time()
+            date, time = getDatetimeFromSlug(slug)
         entry = Entry(
             date=date,
             time=time,
@@ -458,17 +467,29 @@ def entry(
     )
 
 
-@login_required
-def entry_update(request, pk=None, datetime=None, time=None):
+#@login_required
+def entry_update(request):
     """
     Update an entry's details via ajax. 
     At present only the date and time can be changed this way.
     """
-    json_data = json.dumps({'message': 'Hello Ajax!'})
-    return HttpResponse(
-        json_data,
-        mimetype='application/json',
-    )
+    pk = request.POST['pk']
+    print('pk is {0}'.format(pk))
+    entry = get_object_or_404(Entry, pk=pk)
+
+    datetime_slug = request.POST['slug']
+    print('datetime_slug is {0}'.format(datetime_slug))
+    date, time = getDatetimeFromSlug(datetime_slug)
+
+    # try updating the entry
+    entry.date = date
+    entry.time = time
+    entry.save()
+
+    message = 'Date / time changed to {0}, {1}'.format(date, time)
+    data = {'message': message}
+    print('Sending data {0}'.format(data))
+    return JsonResponse(data)
 
 
 @login_required

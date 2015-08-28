@@ -55,9 +55,9 @@
     {% url 'cal.views.entry' pk=entry.pk as url_edit %}
     {% url 'cal.views.entry_delete' pk=entry.pk as url_delete %}
                                 <div 
-                                    data-toggle="modal" 
-                                    data-target="#modal{{ datetime_slug }}"
                                     id="{{ entry.pk }}" 
+                                    data-toggle="modal" 
+                                    data-target="#modal{{ entry.pk }}"
                                     draggable="True"
                                     ondragstart="drag(event);"
                                     >
