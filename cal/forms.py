@@ -6,7 +6,6 @@ from datetimewidget.widgets import (
 )
 
 
-VALID_TIME_FORMATS = ['%H:%M', '%I:%M%p', '%I:%M %p',]
 TIME_FORMATS = ['%H:%M', '%I:%M%p', '%I:%M %p',]
 DURATION_FORMATS = ['%H:%M',]
 DATE_WIDGET_OPTIONS = {

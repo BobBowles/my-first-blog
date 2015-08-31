@@ -15,7 +15,7 @@ from django.core.urlresolvers import reverse
 from django.db.models import Q
 import locale
 from . import settings
-#import json
+
 
 # Create your views here.
 

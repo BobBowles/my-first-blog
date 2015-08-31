@@ -9,7 +9,6 @@ from django.forms import ValidationError
 # Create your models here.
 
 DURATION_ZERO = datetime.time(hour=0)
-#DEFAULT_DURATION = datetime.timedelta(hours=1)
 DEFAULT_DURATION = datetime.time(hour=1)
 DEFAULT_TIME = datetime.time(hour=12)
 
@@ -63,14 +62,12 @@ class Entry(models.Model):
         is not supported in python datetime arithmetic; a datetime object has 
         to be used.
         """
-#        if self.duration:
         the_time = datetime.datetime.combine(self.date, self.time)
         the_zero = datetime.datetime.combine(self.date, DURATION_ZERO)
         the_duration = datetime.datetime.combine(self.date, self.duration)
         duration_delta = the_duration - the_zero
         the_time_end = the_time + duration_delta
         return the_time_end.time()
-#        return None
 
 
     def __eq__(self, other):
