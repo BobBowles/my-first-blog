@@ -15,21 +15,25 @@ import importlib as imp         # since Python 3.4
 
 # Create your tests here.
 
-
+TIME_ZERO = datetime.time(0,0)
 
 
 def create_entry(dateDelta, time, duration, title, snippet, body):
     """
     Utility to create an entry for testing.
+    Updated to use timefield for duration.
     """
     date = timezone.datetime.today() + dateDelta
+    duration_as_time = (
+        datetime.datetime.combine(date, TIME_ZERO) + duration
+    ).time()
     return Entry(
         title=title,
         snippet=snippet,
         body=body,
         date=date,
         time=time,
-        duration=duration,
+        duration=duration_as_time, # duration in the database is really a time
     )
 
 
