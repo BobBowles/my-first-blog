@@ -39,7 +39,7 @@
                 <div class="col-md-1">
                     <b>{{ label }}</b>
                 </div>
-                {% for datetime_slug, entry, current in day_entries %}
+                {% for datetime_slug, entries, current in day_entries %}
                     <span class="parent">　<!-- common parent -->
                         <div 
                             id="{{ datetime_slug }}"
@@ -51,20 +51,24 @@
                             ondrop="drop(event);"
                             ondragend="dragend(event);"
                             > <!-- droptarget -->
-                            {% if entry %}
+                            {% for entry in entries %}
     {% url 'cal.views.entry' pk=entry.pk as url_edit %}
     {% url 'cal.views.entry_delete' pk=entry.pk as url_delete %}
                                 <div 
-                                    id="{{ entry.pk }}" 
-                                    data-toggle="modal" 
-                                    data-target="#modal{{ entry.pk }}"
+                                    class="entry"
+                                    id="{{ entry.pk }}"
                                     draggable="True"
                                     ondragstart="drag(event);"
                                     >
-                                    <b>{{ entry.creator.username }}</b>
+                                    <div 
+                                        data-toggle="modal" 
+                                        data-target="#modal{{ entry.pk }}"
+                                        >
+                                        <b>{{ entry.creator.username }}</b>
+                                    </div>
+                                    {% include 'cal/modal_entry.html' %}
                                 </div>
-                                {% include 'cal/modal_entry.html' %}
-                            {% endif %}
+                            {% endfor %}
                         </div> <!-- droptarget -->
                         <div class="col-md-1"> <!-- parent of button -->
     {% url 'cal.views.entry' slug=datetime_slug as cal_new_entry %}

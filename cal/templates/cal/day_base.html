@@ -113,23 +113,23 @@ function dragover(ev) {
     if (ev.preventDefault) {
         ev.preventDefault(); // Necessary. Allows us to drop.
     }
-    //console.log('Dragover element ['+ev.target.id+']');
+    console.log('Dragover element ['+ev.target.id+']');
 }
 
 function dragenter(ev) {
-    //console.log('Entering element ['+ev.target.id+']');
+    console.log('Entering element ['+ev.target.id+']');
     ev.target.classList.add('dragover');  // the new drop target.
 }
 
 function dragleave(ev) {
-    //console.log('Leaving element ['+ev.target.id+']');
+    console.log('Leaving element ['+ev.target.id+']');
     ev.target.classList.remove('dragover');  // now the previous drop target.
 }
 
 function drag(ev) {
     ev.dataTransfer.setData("text/html", ev.target.id);
-    //console.log('Dragging target ['+ev.target.id+']');
-    //console.log('Data to transfer is '+ev.dataTransfer.getData("text/html"))
+    console.log('Dragging target ['+ev.target.id+']');
+    console.log('Data to transfer is '+ev.dataTransfer.getData("text/html"))
 }
 
 function drop(ev) {
@@ -154,7 +154,7 @@ function drop(ev) {
             alert('Cannot put entry there. Try a different day or time.');
       }
     });
-    //console.log('Finalising css on ['+ev.target.id+']');
+    console.log('Finalising css on ['+ev.target.id+']');
     ev.target.classList.remove('dragover');  // clean the css
 }
 
@@ -169,7 +169,7 @@ function dragend(ev) {
 jQuery(document).ready(function(){
     console.log('Updating button status at start...');
     updateNewButtons();
-})
+});
 
     </script>
 

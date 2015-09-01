@@ -18,7 +18,7 @@
     {{ block.super }}
 
     <div class="container-fluid">
-        {% for label, datetime_slug, start_time, entry, current in time_slots %}
+        {% for label, datetime_slug, start_time, entries, current in time_slots %}
             <div class="row">
                 <div class="col-md-1">
                     <b>{{ label }}</b>
@@ -34,22 +34,25 @@
                         ondrop="drop(event);"
                         ondragend="dragend(event);"
                         >
-                        {% if entry %}
+                        {% for entry in entries %}
     {% url 'cal.views.entry' pk=entry.pk as url_edit %}
     {% url 'cal.views.entry_delete' pk=entry.pk as url_delete %}
                             <div 
+                                class="entry"
                                 id="{{ entry.pk }}"
-                                data-toggle="modal" 
-                                data-target="#modal{{ entry.pk }}"
                                 draggable="true"
                                 ondragstart="drag(event);"
                                 >
-                                <i>{{ entry.time }} - {{ entry.time_end }}:</i>
-                                <b>{{ entry.creator.username }}</b> -
-                                {{ entry.short|safe }}
+                                <div 
+                                    data-toggle="modal" 
+                                    data-target="#modal{{ entry.pk }}"
+                                    >
+                                    <b>{{ entry.creator.username }}</b> -
+                                    {{ entry.short|safe }}
+                                </div>
+                                {% include 'cal/modal_entry.html' %}
                             </div>
-                            {% include 'cal/modal_entry.html' %}
-                        {% endif %}
+                        {% endfor %}
                     </div>
                     <div class="col-md-1">
     {% url 'cal.views.entry' slug=datetime_slug as cal_new_entry %}

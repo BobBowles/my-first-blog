@@ -13,14 +13,14 @@ from django.core.context_processors import csrf
 from django.http import HttpResponseRedirect, JsonResponse
 from django.core.urlresolvers import reverse
 from django.db.models import Q
-import locale
-from . import settings
+from django.forms import ValidationError
 
 
 # Create your views here.
 
 from .models import Entry
 from .forms import EntryForm
+from . import settings
 
 
 # set the first day of the week (default 0=monday)
@@ -41,15 +41,18 @@ TIME_SLUG_FORMAT = '%H-%M'
 DATETIME_SLUG_FORMAT = '%Y-%m-%d_%H-%M'
 
 
+# Constants for constructing the time slots
+TIME_START = datetime.time(hour=6)
+TIME_FINISH = datetime.time(hour=20)
+TIME_INC = datetime.timedelta(minutes=30)
+
+
 def evaluateTimeSlots():
     """
     Calculate labels and starting times for diary day display.
     Returns a list of labels and start/end times of time slots.
     """
     DUMMY_DAY = timezone.localtime(timezone.now()).date()
-    TIME_START = datetime.time(hour=6)
-    TIME_FINISH = datetime.time(hour=20)
-    TIME_INC = datetime.timedelta(minutes=30)
 
     time = datetime.datetime.combine(DUMMY_DAY, TIME_START)
     finish = datetime.datetime.combine(DUMMY_DAY, TIME_FINISH)
@@ -273,10 +276,10 @@ def multi_day(request, year=None, month=None, day=None, slug=None, change=None):
                     time__gte=startTime, 
                     time__lt=endTime, 
                     creator=request.user
-            )
+                ).order_by('time')
             day_entries.append((
                 '_'.join((date_slug, time_slug)), 
-                entries.first(),
+                entries,
                 (currentTime and day == today),
             ))
         time_slots.append((
@@ -323,12 +326,12 @@ def day(request, year=None, month=None, day=None, slug=None, change=None):
                 time__gte=startTime, 
                 time__lt=endTime, 
                 creator=request.user
-        )
+            ).order_by('time')
         time_slots.append((
             timeLabel, 
             '_'.join((date_slug, time_slug)),
             startTime,
-            entries.first(),
+            entries,
             (currentDate and (now >= startTime and now < endTime)),
         ))
 
@@ -467,7 +470,7 @@ def entry(
     )
 
 
-#@login_required
+@login_required
 def entry_update(request):
     """
     Update an entry's details via ajax. 
@@ -484,9 +487,30 @@ def entry_update(request):
     # try updating the entry
     entry.date = date
     entry.time = time
-    entry.save()
+    print('Trying save with date={0}, time={1}'.format(date, time))
+    try:
+        entry.save()
+    except ValidationError as ve:
+        # attempt to fit the entry in later in the time slot
+        endTime = (
+            datetime.datetime.combine(date, time) + TIME_INC
+            ).time()
+        otherEntry = Entry.objects\
+            .filter(
+                date=date, 
+                time__gte=time, 
+                time__lt=endTime, 
+            ).first()
+        if otherEntry.time_end() >= endTime:
+            # really no more space in this time slot
+            raise ve
+        # try adding after the other entry
+        entry.time = otherEntry.time_end()
+        print('Re-trying save with date={0}, time={1}'
+            .format(entry.date, entry.time))
+        entry.save()
 
-    message = 'Date / time changed to {0}, {1}'.format(date, time)
+    message = 'Date / time changed to {0}, {1}'.format(entry.date, entry.time)
     data = {'message': message}
     print('Sending data {0}'.format(data))
     return JsonResponse(data)

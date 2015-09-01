@@ -20,7 +20,7 @@
         <h4>{{ year }}</h4>
         {% for month in months %}
             <div class="month{% if month.current %} current{% endif %}
-                {% if month.entry %} entry{% endif %}">
+                {% if month.entry %} hasentry{% endif %}">
                 <a href="{% url 'cal.views.month' year=year month=month.n %}">
                     {{ month.name }}
                 </a>

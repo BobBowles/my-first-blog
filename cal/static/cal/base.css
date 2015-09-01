@@ -9,7 +9,7 @@
     background-color: #f57900;
 }
 
-.entry {
+.hasentry {
     font-weight: bold;
 }
 
@@ -65,6 +65,11 @@
 
 .dragover {
     border: 2px solid #ff0000;
+}
+
+div.entry {
+    float: left;
+    padding-right: 10px;
 }
 
 /* http://www.html5rocks.com/en/tutorials/dnd/basics/ */
