@@ -69,6 +69,7 @@
 
 div.entry {
     float: left;
+    display: inline;
     padding-right: 10px;
 }
 

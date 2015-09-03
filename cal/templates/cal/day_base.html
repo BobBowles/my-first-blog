@@ -96,10 +96,9 @@ function updateNewButtons() {
     //console.log('btnList length: '+btnList.length)
     var i;
     for (i=0; i < btnList.length; i++) {
-        // set button disabled if the droptarget next to it has a child
         var btn = btnList[i];
         // find any siblings of the button that are entry elements
-        var parent = btn.parentElement.parentElement;
+        var parent = btn.parentElement;
         btnList[i].disabled = $(parent).find('.entry').length;
     };
 };
@@ -147,6 +146,7 @@ function drop(ev) {
             /* if the post succeeds continue with the drop */
             ev.target.appendChild(document.getElementById(pk));
             //console.log('Dropped target in ['+ev.target.id+']');
+            updateNewButtons(); // because the async call is last to complete
         },
         error: function (xhr, ajaxOptions, thrownError) {
             //console.log(xhr);
@@ -159,8 +159,8 @@ function drop(ev) {
 
 function dragend(ev) {
     /* tidy up after the drag */
-    updateNewButtons();
     //console.log('Drag ended for element ['+ev.target.id+']');
+    //updateNewButtons(); // ajax is asynchronous so this happens too soon here
 }
 
 

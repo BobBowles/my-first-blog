@@ -27,7 +27,7 @@
                     <div 
                         id="{{ datetime_slug }}"
                         class=
-                        "col-md-10 droptarget{% if current %} current{% endif %}"
+                        "col-md-11 droptarget{% if current %} current{% endif %}"
                         ondragenter="dragenter(event);"
                         ondragleave="dragleave(event);"
                         ondragover="dragover(event);"
@@ -53,8 +53,6 @@
                                 </div>
                             </div>
                         {% endfor %}
-                    </div>
-                    <div class="col-md-1">
     {% url 'cal.views.entry' slug=datetime_slug as cal_new_entry %}
                         <button type="button" 
                             class="btn btn-default btn-xs new"

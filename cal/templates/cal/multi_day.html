@@ -44,13 +44,13 @@
                         <div 
                             id="{{ datetime_slug }}"
                             class=
-                        "col-md-1 droptarget{% if current %} current{% endif %}"
+                        "col-md-2 droptarget{% if current %} current{% endif %}"
                             ondragenter="dragenter(event);"
                             ondragleave="dragleave(event);"
                             ondragover="dragover(event);"
                             ondrop="drop(event);"
                             ondragend="dragend(event);"
-                            > <!-- droptarget -->
+                            >
                             {% for entry in entries %}
     {% url 'cal.views.entry' pk=entry.pk as url_edit %}
     {% url 'cal.views.entry_delete' pk=entry.pk as url_delete %}
@@ -69,15 +69,13 @@
                                     </div>
                                 </div>
                             {% endfor %}
-                        </div> <!-- droptarget -->
-                        <div class="col-md-1"> <!-- parent of button -->
     {% url 'cal.views.entry' slug=datetime_slug as cal_new_entry %}
                             <button type="button" 
                                 class="btn btn-default btn-xs new"
                                 onclick="location.href='{{ cal_new_entry }}'">
                                 New
                             </button>
-                        </div> <!-- parent of button -->
+                        </div>
                     </span> <!-- common parent -->
                 {% endfor %}
             </div>
