@@ -419,18 +419,7 @@ def entry(request, pk=None, slug=None,):
         entry = get_object_or_404(Entry, pk=pk)
     else:                               # make a new entry
         # determine the date and time to use
-        if year:                        # deprecated
-            print('Entry using DEPRECATED kwargs year, etc.')
-            date = datetime.date(
-                year=int(year),
-                month=int(month),
-                day=int(day),
-            )
-            time = datetime.time(
-                hour=int(hour),
-                minute=int(minute),
-            )
-        elif slug:
+        if slug:
             date, time = getDatetimeFromSlug(slug)
         entry = Entry(
             date=date,
@@ -537,8 +526,6 @@ def entry_delete(request, pk):
     entry.delete()
     return redirect(
         'cal.views.day', 
-        year=date.year,
-        month=date.month,
-        day=date.day,
+        slug=date.strftime(DATE_SLUG_FORMAT),
     )
 

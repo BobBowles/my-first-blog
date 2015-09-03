@@ -16,12 +16,12 @@ modal and acted upon. */
 /* listener cleans out the hidden input data repository when a modal is shown 
 and gets the new data for the modal as an html snippet from the server */
 $(document).on('show.bs.modal', function (event) {
-    console.log('Cleaning old next_url...');
+    //console.log('Cleaning old next_url...');
     $('#next_url').val('');
-    console.log('Cleaning out old modal contents...');
+    //console.log('Cleaning out old modal contents...');
     var modal = $('#ajaxModal');
     modal.html(''); // remove old modal contents
-    console.log('Start Modal Contents: '+modal.html());
+    //console.log('Start Modal Contents: '+modal.html());
     /* obtain data for populating the modal */
     var trigger = $(event.relatedTarget);
     var href = trigger.data('href');
@@ -49,7 +49,7 @@ $(document).on('show.bs.modal', function (event) {
 /* method attached to modal action buttons via onclick puts the redirection
 target in the hidden input and hides the modal */
 function next_url(href) {
-    console.log('Setting next_url to '+href)
+    //console.log('Setting next_url to '+href)
     $('#next_url').val(href);
     $('#ajaxModal').modal("hide");
 }
@@ -57,7 +57,7 @@ function next_url(href) {
 /* listener navigates to new web page after the modal is closed */
 $(document).on('hidden.bs.modal', function (event) {
     if ($('#next_url').val()) {
-        console.log('Navigating to '+$('#next_url').val());
+        //console.log('Navigating to '+$('#next_url').val());
         location.href = $('#next_url').val();
     }
 })
