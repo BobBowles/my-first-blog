@@ -8,33 +8,62 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script src="{% static 'js.cookie.js' %}"></script>
 
-    <script>
-/* these three code snippets enable data to be collected from the modals and
-acted upon. */
+    <script> {# ajax modal scripts #}
+/* these three code snippets enable updated entry data to be displayed in a
+modal and acted upon. */
 
 
-/* listener cleans out the hidden input data repository when a modal is shown */
+/* listener cleans out the hidden input data repository when a modal is shown 
+and gets the new data for the modal as an html snippet from the server */
 $(document).on('show.bs.modal', function (event) {
+    console.log('Cleaning old next_url...');
     $('#next_url').val('');
-})
+    console.log('Cleaning out old modal contents...');
+    var modal = $('#ajaxModal');
+    modal.html(''); // remove old modal contents
+    console.log('Start Modal Contents: '+modal.html());
+    /* obtain data for populating the modal */
+    var trigger = $(event.relatedTarget);
+    var href = trigger.data('href');
+    console.log('Retrieving data from '+href);
+    /* use ajax to populate the modal stub */
+    $.ajax({
+        url: href,
+        type: "get",
+        data: {},
+        datatype: "html",
+        success: function(result) {
+            /* if the get succeeds add the results into the modal */
+            //console.log('Results:'+result)
+            modal.html(result);
+            //console.log('Finish Modal Contents: '+modal.html());
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            console.log(xhr);
+            alert('Cannot instantiate modal.');
+        }
+    });
+});
+
 
 /* method attached to modal action buttons via onclick puts the redirection
 target in the hidden input and hides the modal */
-function next_url(modal_label, href) {
+function next_url(href) {
+    console.log('Setting next_url to '+href)
     $('#next_url').val(href);
-    $('#'+modal_label).modal("hide");
+    $('#ajaxModal').modal("hide");
 }
 
-/* listener redirects the web page according to the contents of the hidden input
-after the modal has closed */
+/* listener navigates to new web page after the modal is closed */
 $(document).on('hidden.bs.modal', function (event) {
     if ($('#next_url').val()) {
+        console.log('Navigating to '+$('#next_url').val());
         location.href = $('#next_url').val();
     }
 })
     </script>
 
-    <script> 
+    <script> {# ajax drag and drop #}
 /* scripts for handling drag-n-drop and ajax */
 /* http://www.w3schools.com/html/html5_draganddrop.asp */
 /* with tweaks from 
@@ -42,7 +71,6 @@ $(document).on('hidden.bs.modal', function (event) {
 
 /* get hold of the csrf token for posting, setup ajax to use it */
 var csrftoken = Cookies.get('csrftoken');
-//console.log('csrf token is '+csrftoken);
 
 /* these are straight from the Django ajax manual pages */
 function csrfSafeMethod(method) {
@@ -57,7 +85,7 @@ $.ajaxSetup({
     }
 });
 $(document).ajaxSend(function() {
-    console.log("Triggered ajaxSend handler."); // TODO: something goes here??
+    console.log("Triggered ajaxSend handler."); 
 });
 
 
@@ -107,29 +135,30 @@ function updateNewButtons() {
 };
 
 
-/* drag and drop handlers attached to targets in html via onxxxx syntax */
+/* drag and drop handlers attached to targets in html via onXXXX syntax 
+ e.g. <div ondragover="dragover(event);" etc...> */
 
 function dragover(ev) {
     if (ev.preventDefault) {
         ev.preventDefault(); // Necessary. Allows us to drop.
     }
-    console.log('Dragover element ['+ev.target.id+']');
+    //console.log('Dragover element ['+ev.target.id+']');
 }
 
 function dragenter(ev) {
-    console.log('Entering element ['+ev.target.id+']');
+    //console.log('Entering element ['+ev.target.id+']');
     ev.target.classList.add('dragover');  // the new drop target.
 }
 
 function dragleave(ev) {
-    console.log('Leaving element ['+ev.target.id+']');
+    //console.log('Leaving element ['+ev.target.id+']');
     ev.target.classList.remove('dragover');  // now the previous drop target.
 }
 
 function drag(ev) {
     ev.dataTransfer.setData("text/html", ev.target.id);
-    console.log('Dragging target ['+ev.target.id+']');
-    console.log('Data to transfer is '+ev.dataTransfer.getData("text/html"))
+    //console.log('Dragging target ['+ev.target.id+']');
+    //console.log('Data to transfer is '+ev.dataTransfer.getData("text/html"))
 }
 
 function drop(ev) {
@@ -147,36 +176,37 @@ function drop(ev) {
         success: function(result) {
             /* if the post succeeds continue with the drop */
             ev.target.appendChild(document.getElementById(pk));
-            console.log('Dropped target in ['+ev.target.id+']');
+            //console.log('Dropped target in ['+ev.target.id+']');
         },
         error: function (xhr, ajaxOptions, thrownError) {
-            console.log(xhr);
+            //console.log(xhr);
             alert('Cannot put entry there. Try a different day or time.');
       }
     });
-    console.log('Finalising css on ['+ev.target.id+']');
+    //console.log('Finalising css on ['+ev.target.id+']');
     ev.target.classList.remove('dragover');  // clean the css
 }
 
 function dragend(ev) {
     /* tidy up after the drag */
     updateNewButtons();
-    console.log('Drag ended for element ['+ev.target.id+']');
+    //console.log('Drag ended for element ['+ev.target.id+']');
 }
 
 
-
 jQuery(document).ready(function(){
-    console.log('Updating button status at start...');
+    //console.log('Updating button status at start...');
     updateNewButtons();
 });
 
     </script>
-
 {% endblock cal_head_extra %}
 
 
 {% block calendar_content %} {# invoke this as super from child template #}
 <input type="hidden" id="next_url"> <!-- storage for modal redirect trigger -->
+{# attachment point for ajax modal - empty #}
+<div class="modal fade" id="ajaxModal" role="dialog"></div>
+
 {% endblock calendar_content %}
 

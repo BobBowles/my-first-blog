@@ -39,12 +39,12 @@ urlpatterns = [
     url(r'^entry_delete/(?P<pk>\d+)/$', views.entry_delete),
 
 
-# TODO: for ajax
-#    url(r'^entry_update/(?P<pk>\d+)/(?P<slug>\d{4}\-\d\d\-\d\d\+\d\d:\d\d)/$', 
-#        views.entry_update,
-#    ),
-#    url(r'^entry_update/(?P<pk>\d+)/(?P<slug>\d\d:\d\d)/$', views.entry_update),
+# for drag-and-drop with ajax
     url(r'^entry_update/$', views.entry_update),
+
+
+# ajax dynamic modals
+    url(r'^entry_modal/(?P<pk>\d+)/$', views.entry_modal),
 
 
     # the following are redundant and not maintained

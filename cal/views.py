@@ -10,10 +10,11 @@ from django.utils import timezone
 import calendar
 from django.forms.formsets import formset_factory
 from django.core.context_processors import csrf
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.forms import ValidationError
+from django.template.loader import render_to_string
 
 
 # Create your views here.
@@ -404,12 +405,7 @@ def day_list(request, year=None, month=None, day=None, change=None):
 
 
 @login_required
-def entry(
-    request, 
-    pk=None, 
-    year=None, month=None, day=None, hour=None, minute=None, # deprecated
-    slug=None,
-    ):
+def entry(request, pk=None, slug=None,):
     """
     Edit/create an entry for the diary.
     """
@@ -417,8 +413,8 @@ def entry(
     date = timezone.now().date()
     time = timezone.now().time()
     entry = None
-    
-    #
+
+    # decide whether we are creating a new entry or editing a new one
     if pk:                              # edit existing entry
         entry = get_object_or_404(Entry, pk=pk)
     else:                               # make a new entry
@@ -446,14 +442,11 @@ def entry(
         form = EntryForm(request.POST, instance=entry)
         if form.is_valid():
             entry = form.save(commit=False)
-            # do any necessary tidying of entry attributes
-            
             entry.save()
 
             # in case the date has been edited re-calculate the navigation slug
             return redirect(
                 'cal.views.day', 
-                #year=entry.date.year, month=entry.date.month, day=entry.date.day,
                 slug=entry.date.strftime(DATE_SLUG_FORMAT),
             )
     else:
@@ -512,8 +505,26 @@ def entry_update(request):
 
     message = 'Date / time changed to {0}, {1}'.format(entry.date, entry.time)
     data = {'message': message}
-    print('Sending data {0}'.format(data))
+    #print('Sending entry_update data {0}'.format(data))
     return JsonResponse(data)
+
+
+@login_required
+def entry_modal(request, pk):
+    """
+    Prepare and send an html snippet to display an entry in a modal dialog via
+    ajax - but using html.
+    """
+    entry = get_object_or_404(Entry, pk=pk)
+    html = render_to_string(
+        'cal/modal_entry.html',
+        context={
+            'entry': entry,
+        },
+        request=request,
+    )
+    #print('Sending entry_modal data {0}'.format(html))
+    return HttpResponse(html)
 
 
 @login_required

@@ -44,13 +44,13 @@
                                 ondragstart="drag(event);"
                                 >
                                 <div 
-                                    data-toggle="modal" 
-                                    data-target="#modal{{ entry.pk }}"
+                data-href="{% url 'cal.views.entry_modal' pk=entry.pk %}"
+                                    data-toggle="modal"
+                                    data-target="#ajaxModal"
                                     >
                                     <b>{{ entry.creator.username }}</b> -
                                     {{ entry.short|safe }}
                                 </div>
-                                {% include 'cal/modal_entry.html' %}
                             </div>
                         {% endfor %}
                     </div>
