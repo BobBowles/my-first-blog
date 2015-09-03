@@ -98,39 +98,9 @@ function updateNewButtons() {
     for (i=0; i < btnList.length; i++) {
         // set button disabled if the droptarget next to it has a child
         var btn = btnList[i];
-        // identify the associated droptarget element
+        // find any siblings of the button that are entry elements
         var parent = btn.parentElement.parentElement;
-        var droptarget
-        var j;
-        droppable:{
-            for (j=0; j < parent.childNodes.length; j++){
-                var classList = parent.childNodes[j].classList;
-                if (classList){
-                    var k;
-                    for (k=0; k < classList.length; k++){
-                        if (classList[k].indexOf('droptarget')){
-                            //console.log('Node classlist is '+classList);
-                            droptarget = parent.childNodes[j];
-                            break droppable;
-                        };
-                    };
-                };
-            };
-        };
-        // does the droptarget contain a draggable?
-        //console.log('droptarget classlist='+droptarget.classList);
-        var l;
-        var hasDraggable = false;
-        draggable:{
-            for (l=0; l < droptarget.childNodes.length; l++){
-                child = droptarget.childNodes[l];
-                if (child.nodeType == 1 && child.getAttribute('draggable')){
-                    hasDraggable = true;
-                    break draggable;
-                };
-            };
-        };
-        btnList[i].disabled = hasDraggable;
+        btnList[i].disabled = $(parent).find('.entry').length;
     };
 };
 
